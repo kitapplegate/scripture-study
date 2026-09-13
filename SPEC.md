@@ -21,8 +21,8 @@ The **code is public** on GitHub as part of Kit's portfolio. The **site's conten
 
 ## Who it's for
 
-An invite-only circle of family and friends, somewhere from 5 to 50 people, some of
-them kids. It has to work well on phones.
+An invite-only circle of family and friends, somewhere from 5 to 50 people, **all adults** (Kit, 2026-09-13). It has to
+work well on phones.
 
 ## Principles
 
@@ -48,6 +48,11 @@ them kids. It has to work well on phones.
 6. **Verse ids are forever.** `1-ne.3.7`, `dc.76.22` (book slug.chapter.verse,
    using Church URL slugs).
 7. **Thin slices.** Each slice names the one observation that proves it works.
+8. **No AI in talks or lessons.** A talk should come by the Spirit, not by technology
+   (Kit, 2026-09-13). The study assistant only finds scriptures: it never writes or
+   outlines a talk or lesson, and declines if asked. The talk builder has no connection
+   to any AI model. Enforced in `lib/assistant-prompt.ts` (`NO_WRITING_RULE`) and
+   covered by a test.
 
 ## Architecture
 
@@ -60,17 +65,16 @@ them kids. It has to work well on phones.
   GitHub: build locally, push, then `git pull` + build on the VPS. The app runs as
   its own systemd service under its own Linux user (`scripture`), like the other apps
   there, behind Caddy with automatic HTTPS. The subdomain is decision D5.
-- **Database**: Postgres 16 on the VPS, in its own database and role, with the
-  `pgvector` extension (`postgresql-16-pgvector` 0.6.0 is in apt).
-- **Search**: hybrid. Postgres full-text search handles exact words and phrases
-  ("faith hope charity"). pgvector embeddings handle meaning ("scriptures about
-  enduring hard trials"). Chunks are single verses plus overlapping 3–5 verse
-  passages, with the book/chapter headings included.
-- **Embeddings**: a small open model run locally at build time (e.g. bge-small or
-  nomic-embed). That's free, private, and done once for 42k verses.
-- **LLM**: every call goes through one OpenAI-compatible client (`lib/llm.ts`), so
-  the provider is config, not code. Testing uses an OpenRouter `:free` reasoning
-  model (D6). Moving to a paid model later means changing an env var.
+- **Database**: Postgres 16 on the VPS (18 on Kit's PC), in its own database and role.
+- **Search**: Postgres full-text search over a `verses` table (English stemming;
+  all-words first, then some-words; "phrases" and -exclude). Meaning-based search
+  comes from the assistant sending several synonym queries at once. pgvector and
+  embeddings are deferred (see the 2026-09-13 status update).
+- **LLM**: `lib/llm.ts` builds a fallback chain from whichever provider keys are set:
+  Cerebras → Groq → OpenRouter by default (`ASSISTANT_PROVIDERS` reorders it). A call
+  that fails before streaming (rate limit, outage, bad key) moves to the next
+  provider (`lib/fallback-model.ts`). Models are env vars; providers are AI SDK 7
+  packages.
 
 ## Data model (draft)
 
@@ -103,7 +107,7 @@ them kids. It has to work well on phones.
 | 10 | **Highlights + private notes** | Highlight and note a verse; reload; still there; the other user can't see them |
 | 11 | **Reading plans + streaks + group accountability** | Two members on one plan see each other's progress |
 | 12 | **Come Follow Me week** (reading assignments + a link to the lesson; no manual text) + a weekly discussion thread | This week's readings show with the correct link |
-| — | Later: talk/lesson builder with drag-and-drop, verse of the day, read-aloud (browser speech), memorization flashcards and family challenges, kids' reading badges, Isaiah ↔ 2 Nephi side-by-side, PWA/offline, email digest, Nave's Topical Bible and Easton's Bible Dictionary | — |
+| — | Later: talk/lesson builder with drag-and-drop, verse of the day, read-aloud (browser speech), memorization flashcards and family challenges, Isaiah ↔ 2 Nephi side-by-side, PWA/offline, email digest, Nave's Topical Bible and Easton's Bible Dictionary | — |
 
 ## Security
 
@@ -135,8 +139,9 @@ anyway.
   fantasy football, and magic-cost. The app gets its own non-root Linux user, its own
   Postgres role limited to its own database, and binds to localhost only (Caddy
   fronts it). The firewall already allows only 22/80/443.
-- **Kids**: members only, no public profiles, no direct messages from strangers
-  (there are no strangers). Parents create kids' accounts.
+- **Adults only**: every member is an adult (Kit, 2026-09-13). Several AI providers
+  require that (Gemini and Groq terms: 18+, and Gemini bars apps likely used by
+  minors). If that ever changes, re-check the assistant provider's terms first.
 - **Branding**: not affiliated with the Church. Don't use Church logos or look like
   an official Church app. The README and footer say so.
 - **Dependencies**: Dependabot alerts on the public repo; `npm audit` before deploys.
@@ -144,26 +149,32 @@ anyway.
 ## Decisions
 
 - **D1 — hosting** — ✅ resolved 2026-09-13: VPS, deployed by pulling from GitHub.
-- **D2 — how people join** — open. Recommended: invite links. Alternatives: open
-  signup with approval, or an email allow-list.
-- **D3 — conference talks** — open. Terms of Use rule out scraping or storing talk
-  text. Options:
-  (a) **Links + references** (recommended): members attach a talk link to posts; the
-  assistant suggests a Church site search link on the theme; per-verse "search talks
-  citing this" links to BYU's Scripture Citation Index.
-  (b) Ask the Church for written permission to index talks privately (their terms
-  offer that route), and build full-text talk search only if they grant it.
-  (c) Skip talks.
-- **D4 — shape of the social side** — open. Recommended: a feed of verse posts with
-  comments and reactions, plus a weekly Come Follow Me discussion thread. A live chat
-  room is heavier (websockets) and conversations disappear into scrollback; it could
-  come later.
-- **D5 — subdomain** — open. e.g. `scriptures.marzipan-solutions.com` (the domain
-  the other VPS apps use).
-- **D6 — test model** — default chosen, can change: an OpenRouter `:free` reasoning
-  model with tool support (19 free models listed on 2026-09-13, e.g.
-  `nvidia/nemotron-3-super-120b-a12b:free`, `google/gemma-4-31b-it:free`). Free-model
+- **D2 — how people join** — ✅ resolved 2026-09-13: invite links (single-use,
+  expiring, created by an admin).
+- **D3 — conference talks** — ✅ resolved 2026-09-13: links only. Members attach a
+  talk link to posts; the assistant suggests a Church site search link on the theme;
+  each verse links to BYU's Scripture Citation Index for talks that cite it. No
+  scraping, no stored talk text.
+- **D4 — shape of the social side** — ✅ resolved 2026-09-13: a feed of verse posts
+  with comments and reactions, plus a weekly Come Follow Me discussion thread. **No
+  live chat.**
+- **D5 — subdomain** — ✅ resolved 2026-09-13: `scriptures.marzipan-solutions.com`.
+  Kit adds the DNS record when it's time to deploy.
+- **D7 — build order** — ✅ resolved 2026-09-13: build and debug everything locally
+  first; deploy (slice 2) comes after the local slices are solid.
+- **D6 — test model** — ✅ resolved 2026-09-13 (Kit: "pick the best free model"):
+  primary `thinkingmachines/inkling:free`, fallback
+  `nvidia/nemotron-3-ultra-550b-a55b:free`. These are the two largest
+  general-purpose free models with reasoning and tool support. The others on the list
+  are coding-only, domain-specific (medicine, finance, safety filtering), or small.
+  Both are newer than Claude's training data, so this is chosen by size and
+  description, not benchmarks. **Confirm with a bake-off in slice 8**: the same 5
+  talk-prep prompts through the top 3 free models, scored on share of valid
+  citations, then latency and rate-limit errors; keep the winner. Free-model
   availability changes often; `lib/llm.ts` must make swapping one line.
+- **D8 — groups** — ✅ decided 2026-09-13 (default): for now the whole invited
+  circle is one group, so every member sees the feed. The `groups` tables wait until
+  there's a real need for more than one circle.
 
 ## Status updates
 
@@ -175,3 +186,224 @@ anyway.
   GitHub (D1 resolved). Church Terms of Use checked: no scraping or re-hosting of
   talks or study helps, but linking is fine (D3). Slices reordered around sharing and
   the assistant. Security section added.
+- **2026-09-13** — D2–D6 resolved (invites, talk links only, feed with no live chat,
+  `scriptures.marzipan-solutions.com`, Inkling free model); D7 build locally first.
+  Written and type-checked but **not yet run against a database**: slice 3
+  (better-auth email/password, public HTTP sign-up closed by a hook, single-use
+  hashed invite links, admin Invites page, `proxy.ts` redirect +
+  `requireUser()`), slice 4 (Share from a verse → `/share` → feed of verse cards) and
+  slice 5 (comments, three reactions, author-or-admin delete enforced in SQL).
+  Blocked on creating the local `scripture_study` database.
+- **2026-09-13** — Local database created (PostgreSQL 18 on Kit's PC; the VPS runs 16).
+  Slices 3–5 **verified locally**:
+  - **`npm test`: 14/14 pass.** Covers: a member can't delete another member's post
+    or comment; an admin can delete either; an invite claimed by 3 simultaneous
+    requests gets 1 winner; expired and made-up invites fail; a completed invite
+    can't be reused.
+  - **HTTP checks:** the public sign-up endpoint returns 403 and creates no account;
+    signed-out visits to member pages redirect to `/sign-in?next=…`; the 6th wrong
+    password in a minute gets 429.
+  - **Browser walkthrough:** invite sign-up → feed; share 1 Ne 3:7 with a thought and
+    a talk link; react; comment; delete the comment; an admin creates an invite from
+    the page; member sign-up has no Invites link, and `/admin` redirects them; sign
+    out; sign in returns to `next`; phone width (390px) doesn't scroll sideways.
+
+  Bugs found and fixed during the walkthrough:
+  (1) Sign out did nothing if tapped before JavaScript loaded → it's now a
+  server-action form.
+  (2) Submitting sign-in before JavaScript loaded would have fallen back to a GET
+  with the password in the URL → the form is now `method="post"`.
+  (3) Delete had no confirmation → two-step "Yes, delete / Cancel".
+  (4) The phone header wrapped to 80px → one line, 48px.
+  (5) The layout's database-down fallback also swallowed Next's dynamic-rendering
+  signal → `unstable_rethrow`.
+
+  Walkthrough test accounts and invites deleted afterward; Kit's admin invite is
+  still open.
+- **2026-09-13** — Kit signed in. Built the study assistant and talk builder, plus a
+  New post box.
+  - **New post:** the feed has a reference box ("Alma 32:21", "Moroni 10:4-5");
+    posts can share same-chapter ranges (`end_verse_id`). `lib/references.ts`
+    parses references.
+  - **Search (slice 6):** a `verses` table with an English `tsvector`, reloaded by
+    `scripts/load-verses.mjs`. Verses with all the words come first, topped up with
+    some-of-the-words matches; supports "phrases" and -exclude. `/search` page.
+  - **Architecture change:** no pgvector/embeddings for now. pgvector isn't installed
+    for Kit's local Postgres 18 on Windows, and keyword search, driven by a reasoning
+    model that searches several times with synonyms, needs no extra infrastructure on
+    either machine. Revisit if answers miss obvious passages.
+  - **Study assistant** (`/study`, slices 8–9): AI SDK 7 `streamText` through
+    OpenRouter (`lib/llm.ts`, `models` fallback list, reasoning effort medium).
+    - Two read-only tools, `searchScriptures` and `readPassage`, which never touch
+      member data.
+    - Two modes: Find and Prepare (talk/lesson outline).
+    - Citations are `[[Ref]]`, checked through `/api/passages`; made-up references
+      show struck out and are removed when saved to a talk.
+    - The chat history the browser sends is treated as untrusted: last 12 messages,
+      text only.
+    - Daily cap of 30 requests (admin 150), atomic, in `assistant_usage`.
+  - **Talk builder** (`/talks`): private drafts (markdown + citations), "Save as
+    talk draft" from any assistant answer, write/preview editor with Insert
+    scripture, a word count, and a print view that lists the full text of each cited
+    scripture.
+  - **Not yet tested against a live model:** no `OPENROUTER_API_KEY` yet. The D6
+    bake-off waits on the key.
+- **2026-09-13** — OpenRouter key added (free tier, no credits). **First live test
+  passed**, run as a throwaway user:
+  - Find mode, "Scriptures about enduring trials with patience".
+  - 105 s end to end, 4 model steps.
+  - 5 keyword searches with varied wording plus 2 `readPassage` context checks;
+    reasoning streamed.
+  - **11/11 citations were real verses.**
+
+  **Quota constraint** (OpenRouter limits page, checked 2026-09-13): `:free` models
+  allow 20 requests/min, and **50 requests/day** until the account has bought ≥ $10 of
+  credits, then 1000/day. One assistant question costs about 4 model calls, so the
+  free key covers roughly 12 questions a day for the whole family.
+
+  **Decision D9 is Kit's:** buy $10 of credits once, which lifts free models to
+  1000/day and isn't spent by `:free` models; or accept the limit; or move to a paid
+  model later. The per-user app cap (30/150) is anti-abuse only; the OpenRouter pool is
+  the real ceiling.
+- **2026-09-13** — **D9 resolved** (Kit): stay free by stacking free tiers, Cerebras →
+  Groq → OpenRouter, rather than buying credits. **All members are adults** (Kit), so
+  providers with 18+ terms are allowed. Gemini was considered and not chosen; its
+  free tier lets Google train on and human-review prompts. Terms checked 2026-09-13:
+  - Cerebras: 13+, doesn't train on content.
+  - Groq: 18+, doesn't train on inputs/outputs.
+
+  Free limits from their docs:
+  - Cerebras gpt-oss-120b: 5 RPM, 1M tokens/day.
+  - Groq gpt-oss-120b: 30 RPM, 1K requests/day, 8K TPM, 200K tokens/day.
+
+  **Token diet:** search takes 1–6 queries per call and returns 200-character
+  snippets (24 results max); `readPassage` caps at 20 verses; step limit is 4 (Find)
+  / 6 (Prepare); reasoning effort is low for Find and medium for Prepare.
+
+  **Disclaimer** on `/study`: AI can be wrong, not doctrine, and prompts go to the
+  named outside services.
+
+  Written and unit-tested; **not yet run live on Cerebras or Groq** (keys pending).
+- **2026-09-13** — **Home page** (Kit: "a splash page that has the feed and the chat bot").
+  - **`/` signed in:** the family feed (New post box + latest 10 posts, "All posts →")
+    beside a compact study assistant panel (scrolls inside itself; disclaimer
+    underneath). Side by side and sticky on wide screens; assistant first on phones.
+  - **`/` signed out:** a welcome page with Sign in / Browse the scriptures and three
+    feature cards.
+  - **Library moved** from `/` to `/scriptures`. Sign-in, invite sign-up, and sharing
+    now land on `/`. Deleting a post from Home returns to Home (`returnTo`, allowlisted
+    to `/` or `/feed`).
+  - **Width:** the layout keeps its 48rem reading column, and a page whose top element
+    has class `wide` gets 72rem (Tailwind `has-[>.wide]:max-w-6xl`).
+  - **Verified:** typecheck; 74/74 tests; HTTP checks signed out and as a throwaway
+    member. Measured in the browser: Home at 1280px is side by side (feed 672px,
+    assistant 416px sticky); at 390px it's stacked with no sideways scroll; reading
+    pages stay 768px.
+- **2026-09-13** — Live tests on the provider chain found four problems, all fixed
+  except the first:
+  1. **Cerebras refused every call:** HTTP 402 "Payment required… Visit your billing
+     tab". **Dropped at Kit's call**; `@ai-sdk/cerebras` uninstalled. Chain is now Groq
+     → OpenRouter.
+  2. **Empty answers:** the model spent all of its steps on tool calls. Fixed with
+     `prepareStep` setting `toolChoice: "none"` on the last allowed step.
+     `readPassage` became `readPassages` (up to 6 references per call) so reading
+     takes one step.
+  3. **Groq free tier is 8K tokens/min:** one question used about 6.9K tokens, so
+     roughly one question a minute. Fixed so far: fewer steps, and a cooldown in
+     `lib/fallback-model.ts` skips a provider after it refuses (10 min for
+     401/402/403, 60 s for 429, 15 s otherwise), so each step doesn't re-ask it.
+  4. **OpenRouter failed after accepting the request:** "Upstream error… overloaded"
+     came as the first stream part, after the request was accepted. The fallback now
+     reads ahead to the first real stream part and switches providers if it's an
+     error.
+
+  Verified: typecheck, 79/79 tests. Also live: a Cerebras 402/401 fell back to Groq,
+  and a Groq 429 fell back to OpenRouter. **D9 reopened:** find a replacement free
+  provider for Cerebras. GitHub Models was retired 2026-07-30; SambaNova free is
+  ~20 requests/day; Mistral's free limits are unpublished (reports of ~1 RPM).
+  NVIDIA NIM (40 RPM) is being checked.
+- **2026-09-13** — **D9 resolved again** (Kit): Gemini's free tier becomes the primary
+  provider, **with a disclaimer**. Chain: Gemini → Groq → OpenRouter.
+  - **Checked and rejected:** NVIDIA NIM (its trial terms bar "activity serving real
+    end-users"), SambaNova (~20 requests/day), Mistral free (evaluation only; limits
+    unpublished).
+  - **Gemini terms** (checked earlier today): 18+ and no apps likely used by minors,
+    both satisfied since all members are adults. On unpaid services Google uses
+    prompts and responses to improve its products, and human reviewers may read
+    them. The `/study` disclaimer and the home panel say so whenever Gemini is
+    configured.
+  - **Setup:** the key goes in `GEMINI_API_KEY`. The model ID is taken from Google's
+    model list for Kit's key, not assumed. Free limits show only in AI Studio.
+- **2026-09-13** — **Gemini live-tested**, run as a throwaway user after two more fixes:
+  - **Dash variants:** a model wrote `Romans 5:3‑4` with a non-breaking hyphen, and a
+    real verse was flagged as fake. `lib/references.ts` now accepts U+2010–2015 and
+    U+2212.
+  - **Null inputs:** gpt-oss on Groq sent `volume: null`, which Groq rejected under
+    strict schema checking. The search tool's `volume` is now nullable.
+
+  Results:
+  - **Find:** answered by Gemini (`gemini-flash-latest`, which resolves to 3.8 Flash)
+    in 13.5 s, 4.9K tokens, 7/7 citations real, `[[ ]]` format used.
+  - **Prepare:** Gemini returned 503 "overloaded" (2 of 3 app calls did), so Groq
+    answered in 5.3 s, 8.0K tokens (at Groq's 8K TPM cap), 4/4 citations real,
+    well-formed outline.
+  - **Follow-ups:** a second Gemini model (`gemini-3.6-flash`) joins the chain after
+    the newest, so an overloaded one stays within Google before falling to Groq. The
+    fallback now adds `response-metadata.modelId` so logs show which model answered
+    (Gemini's stream doesn't say). Google's API reports `gemini-2.5-flash` is no longer
+    available to new users.
+- **2026-09-13** — One more live bug, fixed:
+  - **The bug:** on "Verses about the Holy Ghost as a comforter", Gemini spent a step
+    searching for `"John 14:16"` as words (0 results), reached the step limit, and on
+    the forced tool-less last step wrote only a 125-character fragment.
+  - **Fixes:** `searchScriptures` now resolves reference-shaped queries directly to
+    that passage (test added). The last step also gets an explicit "no tool calls
+    left, write your complete answer now" instruction alongside `toolChoice: "none"`.
+    The log line now records per-step finish reasons.
+  - **Rerun:** the same question on Gemini took 3 steps (`tool-calls,tool-calls,stop`),
+    3.8 s, 5.5K tokens, a complete 1,379-character answer, 6/6 citations real. The
+    exact cause of the earlier fragment (recitation filter vs. tool-choice quirk) was
+    not reproduced; the log's finish reasons will show it if it recurs.
+- **2026-09-13** — Principle 8 added (Kit): Prepare mode (now labeled "Outline a talk or
+  lesson") returns only a suggested title, a numbered outline of short headings with
+  1–3 cited scriptures each, and extra scriptures to consider. No hooks, sample
+  sentences, stories, testimony, or closings. Both modes decline requests to write a
+  talk. The previous prompt had produced a scripted opening line in a live Groq test.
+  **Live-verified 2026-09-13** (throwaway user, prose check = lines over 30 words
+  with no citation):
+  1. **"10-minute sacrament meeting talk on ministering"** (Gemini): the exact outline
+     shape, 3 sections, 8/8 citations real, 0 prose lines, no Opening/Closing.
+  2. **"Please write my whole 10-minute talk on faith, word for word"** (Gemini 3.8
+     returned 429, so Gemini 3.6 answered): kindly declined ("will mean the most… in
+     your own words"), then an outline only, 6/6 citations real.
+  3. **Find mode, "Write the opening paragraph of my talk on repentance"**
+     (Gemini 3.6): declined, gave scriptures and short outline pointers, 4/4
+     citations real.
+
+  The second Gemini model already caught a rate limit. Tokens per question: 7.7K–12.6K.
+- **2026-09-13** — **AI outlines removed** (Kit): "the talk should be by the spirit of
+  God, not by technological AI". The assistant is Find scriptures only. Removed:
+  - the Outline tab and its instructions
+  - `mode` from the chat route, UI, and provider options
+  - "Save as talk draft" and `createTalkFromAssistantAction`
+  - the "Outline one with the assistant" link on My talks
+
+  Principle 8 rewritten.
+
+  **D10 — talk builder** (Kit, 2026-09-13): a no-AI builder replaces the markdown talk
+  editor.
+  - **Layout:** an ordered list of capsules, dragged up and down (not a free canvas).
+  - **Capsule kinds:** scripture, thought/note, section heading, link.
+  - **Printing:** scriptures print with full verse text; PDF comes from the browser's
+    Save-as-PDF.
+  - **Plan:**
+
+  | # | Slice | Proven when |
+  |---|---|---|
+  | T1 | **Builder basics**: `talk_items` table (talk, position, kind, verse_id/end_verse_id, text, url); add scripture by reference, thought, heading, link; edit inline; delete; drag to reorder (dnd-kit: mouse, touch, keyboard); autosave | Add one of each capsule, drag the scripture to the top, reload: order and text kept; another member gets 404 for the talk |
+  | T2 | **Add to talk** from Find results, Search results, and the reader's verse panel (pick which talk; last used by default) | "Add to talk" on John 14:16 in a Find answer puts a scripture capsule at the end of that talk |
+  | T3 | **Print / Save as PDF** view in capsule order with full verse text | Print preview shows headings, thoughts, links, and full scripture text in the arranged order |
+
+  Open at T1: what to do with existing markdown drafts (convert each to a single
+  thought capsule, or start fresh).
+

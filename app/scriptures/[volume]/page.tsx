@@ -19,7 +19,7 @@ export default async function VolumePage({ params }: Props) {
   return (
     <>
       <nav className="mb-2 text-sm text-muted">
-        <Link href="/" className="hover:text-accent">Library</Link>
+        <Link href="/scriptures" className="hover:text-accent">Library</Link>
       </nav>
       <h1 className="font-serif text-3xl font-semibold">{volume.title}</h1>
       {volume.subtitle && <p className="mt-1 text-muted">{volume.subtitle}</p>}

@@ -7,19 +7,36 @@
     "dev": "next dev",
     "prebuild": "npm run build:data",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "db:migrate": "npm run build:data && auth migrate --config lib/auth.ts --yes && node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/migrate.mjs && node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/load-verses.mjs",
+    "invite": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/create-invite.mjs",
+    "test": "node --env-file-if-exists=.env --env-file-if-exists=.env.local --import tsx --test tests/*.test.ts"
   },
   "dependencies": {
+    "@ai-sdk/google": "^4.0.69",
+    "@ai-sdk/groq": "^4.0.41",
+    "@ai-sdk/provider": "^4.0.14",
+    "@ai-sdk/react": "^4.0.102",
+    "@openrouter/ai-sdk-provider": "^3.0.0",
+    "ai": "^7.0.99",
+    "better-auth": "^1.7.4",
     "next": "16.3.5",
+    "pg": "^8.23.0",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "react-markdown": "^10.1.0",
+    "zod": "^4.6.4"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^22",
+    "@types/pg": "^8.23.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "auth": "^1.7.4",
     "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.13",
     "typescript": "^5"
   }
 }

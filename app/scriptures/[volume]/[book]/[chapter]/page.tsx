@@ -31,7 +31,7 @@ export default async function ChapterPage({ params }: Props) {
   return (
     <article>
       <nav className="mb-2 text-sm text-muted">
-        <Link href="/" className="hover:text-accent">Library</Link>
+        <Link href="/scriptures" className="hover:text-accent">Library</Link>
         {!single && (
           <>
             {" / "}

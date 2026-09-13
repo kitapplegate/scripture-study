@@ -66,13 +66,21 @@ export function ChapterReader({ reference, verses }: { reference: string; verses
                     </ul>
                   </>
                 )}
-                <button
-                  type="button"
-                  onClick={() => copy(v)}
-                  className="rounded-md border border-line px-2 py-1 hover:border-accent hover:text-accent"
-                >
-                  {copiedId === v.id ? "Copied" : "Copy verse"}
-                </button>
+                <div className="flex flex-wrap gap-2">
+                  <Link
+                    href={`/share?v=${v.id}`}
+                    className="rounded-md border border-accent px-2 py-1 text-accent hover:bg-hl"
+                  >
+                    Share
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => copy(v)}
+                    className="rounded-md border border-line px-2 py-1 hover:border-accent hover:text-accent"
+                  >
+                    {copiedId === v.id ? "Copied" : "Copy verse"}
+                  </button>
+                </div>
               </div>
             )}
           </li>

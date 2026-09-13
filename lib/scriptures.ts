@@ -2,6 +2,7 @@
 // Slugs from the URL are always checked against index.json before any file is read.
 import fs from "node:fs/promises";
 import path from "node:path";
+import { buildBookLookup, buildReferencePattern, parseReference, type BookLookup } from "./references";
 
 // turbopackIgnore: these files are read at runtime, not bundled.
 const DATA_DIR = path.join(/* turbopackIgnore: true */ process.cwd(), "data", "scriptures");
@@ -109,6 +110,78 @@ export function crossRefLink(index: ScriptureIndex, ref: CrossRef): RefLink | un
     else label += `–${endVs}`;
   }
   return { label, href: chapterHref(loc.volume.slug, bookSlug, Number(ch), Number(vs)) };
+}
+
+export type VerseRef = { id: string; text: string; reference: string; href: string };
+
+export type Passage = {
+  id: string; // first verse id
+  endId?: string; // last verse id, only for ranges
+  reference: string; // "Moroni 10:4–5"
+  href: string;
+  verses: { verse: number; text: string }[];
+};
+
+export const MAX_PASSAGE_VERSES = 40;
+
+export function parseVerseId(id: string) {
+  const m = /^([a-z0-9-]{1,20})\.(\d{1,3})\.(\d{1,3})$/.exec(id);
+  return m ? { book: m[1], chapter: Number(m[2]), verse: Number(m[3]) } : undefined;
+}
+
+// Resolves a verse id, or a same-chapter range of them, to text and a link.
+// undefined if any verse doesn't exist or the range is invalid.
+export async function getPassage(startId: string, endId?: string | null): Promise<Passage | undefined> {
+  const start = parseVerseId(startId);
+  if (!start) return undefined;
+  const end = endId ? parseVerseId(endId) : undefined;
+  if (endId) {
+    if (!end || end.book !== start.book || end.chapter !== start.chapter) return undefined;
+    if (end.verse <= start.verse || end.verse - start.verse >= MAX_PASSAGE_VERSES) return undefined;
+  }
+
+  const loc = locateBook(await getIndex(), start.book);
+  if (!loc) return undefined;
+  const chapter = await getChapter(loc.volume.slug, loc.book.slug, String(start.chapter));
+  if (!chapter) return undefined;
+
+  const last = end?.verse ?? start.verse;
+  const verses = chapter.verses.filter((v) => v.verse >= start.verse && v.verse <= last);
+  if (verses.length !== last - start.verse + 1) return undefined;
+
+  return {
+    id: startId,
+    ...(end ? { endId: endId! } : {}),
+    reference: `${chapter.reference}:${start.verse}${end ? `–${end.verse}` : ""}`,
+    href: chapterHref(loc.volume.slug, loc.book.slug, chapter.chapter, start.verse),
+    verses: verses.map((v) => ({ verse: v.verse, text: v.text })),
+  };
+}
+
+export async function getVerse(id: string): Promise<VerseRef | undefined> {
+  const p = await getPassage(id);
+  return p && { id: p.id, text: p.verses[0].text, reference: p.reference, href: p.href };
+}
+
+let lookupCache: BookLookup | undefined;
+let patternCache: RegExp | undefined;
+
+export async function getBookLookup() {
+  lookupCache ??= buildBookLookup(await getIndex());
+  return lookupCache;
+}
+
+export async function getReferencePattern() {
+  patternCache ??= buildReferencePattern(await getIndex());
+  return patternCache;
+}
+
+// "Moroni 10:4-5" -> Passage. Needs at least a verse; a bare chapter isn't a passage.
+export async function resolveReference(input: string) {
+  const ref = parseReference(input, await getBookLookup());
+  if (!ref?.verse) return undefined;
+  const base = `${ref.book}.${ref.chapter}`;
+  return getPassage(`${base}.${ref.verse}`, ref.endVerse ? `${base}.${ref.endVerse}` : null);
 }
 
 // Previous/next chapter, crossing book and volume boundaries (Malachi 4 -> Matthew 1).

@@ -10,10 +10,29 @@ Jesus Christ of Latter-day Saints.
 
 ## Run it
 
-```sh
-npm install
-npm run dev          # http://localhost:3000
-```
+Needs Node 22+ and PostgreSQL (16+).
+
+1. Create a database and a login for the app (as the Postgres superuser):
+   ```sql
+   CREATE ROLE scripture LOGIN PASSWORD 'choose-a-password';
+   CREATE DATABASE scripture_study OWNER scripture;
+   ```
+2. Create `.env.local` (never committed):
+   ```sh
+   DATABASE_URL=postgres://scripture:choose-a-password@localhost:5432/scripture_study
+   BETTER_AUTH_SECRET=<32+ random bytes, e.g. `node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"`>
+   BETTER_AUTH_URL=http://localhost:3000
+   ```
+3. Install, create the tables, and make the first admin's invite link:
+   ```sh
+   npm install
+   npm run db:migrate
+   npm run invite -- admin "Your name"
+   npm run dev          # http://localhost:3000, then open the printed invite link
+   ```
+
+After that, admins create invite links for everyone else from the **Invites** page.
+Sign-up is invite-only; the public sign-up endpoint is closed.
 
 `npm run build` regenerates `data/scriptures/` from the pinned files in `data/raw/`
 first (via `prebuild`). To regenerate the data alone, run `npm run build:data`. That
