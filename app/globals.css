@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #fbf8f3;
+  --card: #ffffff;
+  --fg: #2a2520;
+  --muted: #7a6f63;
+  --line: #e7dfd3;
+  --accent: #8a5a2b;
+  --hl: #f3e6c8;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #17140f;
+    --card: #1f1b15;
+    --fg: #e9e1d4;
+    --muted: #a39684;
+    --line: #332c23;
+    --accent: #d9a066;
+    --hl: #3a2f1f;
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-card: var(--card);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-hl: var(--hl);
+  --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Noto Serif", serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+}
+
+/* A verse linked by #v7 (e.g. from a cross-reference) gets a soft highlight. */
+.verse:target {
+  background: var(--hl);
+}
