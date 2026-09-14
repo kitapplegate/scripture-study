@@ -617,3 +617,8 @@ anyway.
   anyone else gets a 404 on the edit page. An edit follows the same rules as a new post
   (text or a scripture; the DB check still applies). No migration. Comment editing isn't
   built. VERIFICATION row 25. Not yet deployed.
+- **2026-09-14** — **Home page puts the family feed first (Kit).** On phones the order is
+  now: welcome, Come, Follow Me card, family feed, study assistant (the assistant used to
+  jump ahead of the feed). The home composer is collapsed to a "Write a post…" bar that
+  opens on tap, so posts show on the first screen. On desktop the first post moved up from
+  754px to 434px. The Feed page keeps its full composer. VERIFICATION row 26.

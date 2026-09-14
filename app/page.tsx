@@ -34,10 +34,17 @@ export default async function HomePage() {
             <h2 id="feed-heading" className="font-serif text-xl font-semibold">Family feed</h2>
             <Link href="/feed" className="text-sm text-muted hover:text-accent">All posts →</Link>
           </div>
-          <div className="mb-4 rounded-xl border border-line bg-card p-4">
-            <PostComposer returnTo="/" />
-            <p className="mt-2 text-xs text-muted">Or tap any verse while you're reading, then Share.</p>
-          </div>
+          {/* Collapsed to one line so the posts themselves show on the first screen; a tap opens it. */}
+          <details className="mb-4 rounded-xl border border-line bg-card">
+            <summary className="flex min-h-11 cursor-pointer list-none items-center gap-3 rounded-xl px-4 py-3 text-muted hover:text-accent [&::-webkit-details-marker]:hidden">
+              <span className="flex-1">Write a post…</span>
+              <span aria-hidden="true" className="text-xl leading-none text-accent">+</span>
+            </summary>
+            <div className="border-t border-line p-4">
+              <PostComposer returnTo="/" />
+              <p className="mt-2 text-xs text-muted">Or tap any verse while you're reading, then Share.</p>
+            </div>
+          </details>
           {posts.length === 0 ? (
             <div className="rounded-xl border border-dashed border-line p-6 text-center text-muted">
               Nothing shared yet. <Link href="/scriptures" className="text-accent underline">Open the library</Link>
@@ -53,7 +60,7 @@ export default async function HomePage() {
 
         <aside
           aria-labelledby="assistant-heading"
-          className="rounded-xl border border-line bg-card p-4 max-lg:order-first lg:sticky lg:top-28"
+          className="rounded-xl border border-line bg-card p-4 lg:sticky lg:top-28"
         >
           <div className="mb-3 flex items-baseline justify-between gap-3">
             <h2 id="assistant-heading" className="font-serif text-xl font-semibold">Study assistant</h2>
