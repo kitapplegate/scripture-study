@@ -87,8 +87,15 @@ Then add the assistant keys: `sudoedit /opt/knit/app-src/.env`. The layout is in
 
 ```sh
 stat -c '%U %a' /opt/knit/app-src/.env                      # knit 600
-sudo -u knit psql "$(sudo grep ^DATABASE_URL= /opt/knit/app-src/.env | cut -d= -f2-)" -tAc 'SELECT 1'   # 1
+sudo -u postgres psql -d knit -tAc "SELECT has_database_privilege('knit', 'knit', 'CONNECT')"   # t
 ```
+
+**Never put `DATABASE_URL` (or any secret) on a `sudo` command line.** sudo logs the full
+command, arguments included, to the journal and `/var/log/auth.log`. On 2026-09-14,
+checks run as `sudo -u knit psql "$DBURL"` wrote the knit DB password there, and it had to
+be rotated. For database checks, use `sudo -u postgres psql -d knit` (peer auth, no
+password). The app's own connection is proven by `npm run db:migrate`, which reads `.env`
+itself.
 
 ## 4. Install, migrate, build (as knit)
 

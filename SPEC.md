@@ -593,5 +593,13 @@ anyway.
   Sharing a verse from the reader opens it with that scripture filled in.
   `lib/post-input.ts` does the checks (a made-up reference is an error, not silently
   dropped). The composer keeps what was typed after an error. `ReferencePicker` and
-  `ShareForm` were removed. VERIFICATION row 24. Not yet deployed; the deploy runs
-  migration 007 on the VPS.
+  `ShareForm` were removed. VERIFICATION row 24. Deployed the same day (`c9c174c`); migration
+  007 is applied on the VPS.
+- **2026-09-14** — **Assistant providers on the VPS (Kit):** Gemini first
+  (`GEMINI_MODELS=gemini-3.5-flash-lite`), Groq as the backup, and OpenRouter dropped
+  (`ASSISTANT_PROVIDERS=gemini,groq`). These are `.env` settings, not code defaults. The
+  measurements behind it: Gemini's free tier took 28–75s per model call off and on, while
+  Groq answered in under a second. Groq only takes over when a Gemini call fails (e.g.
+  429), not when it's slow. OpenRouter's `thinkingmachines/inkling:free` started
+  returning 403 ("only available on agentic harnesses"). Local dev still uses the code
+  defaults unless `.env.local` sets the same values.
