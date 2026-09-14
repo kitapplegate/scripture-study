@@ -157,7 +157,9 @@ anyway.
   scraping, no stored talk text.
 - **D4 — shape of the social side** — ✅ resolved 2026-09-13: a feed of verse posts
   with comments and reactions, plus a weekly Come Follow Me discussion thread. **No
-  live chat.**
+  live chat.** **Amended 2026-09-14 (Kit):** posts are free-form. Text alone is a
+  post, and a scripture (one verse or range) is optional; a post needs one or the other.
+  More than one scripture per post isn't built yet.
 - **D5 — subdomain** — ✅ resolved 2026-09-13, **changed 2026-09-14** (Kit):
   `knit.marzipan-solutions.com`, replacing `scriptures.marzipan-solutions.com`. Kit
   renamed the Cloudflare record (DNS only); public resolvers return the VPS for `knit.`
@@ -583,3 +585,13 @@ anyway.
   over" clears it. Principle 4 holds: it stays in that browser tab, is never sent
   anywhere, and is gone when the tab closes. VERIFICATION row 23. Deployed the same day
   (`5ca7624`, via `deploy.sh`).
+- **2026-09-14** — **Bug fix (Kit): the family feed required a scripture.** Posts are now
+  free-form (D4 amended). `migrations/007` makes `posts.verse_id` nullable, with checks
+  that a post has text or a scripture and that a range has a start. One composer
+  (`components/PostComposer.tsx`) on the feed, the home page, and `/share`: write a post,
+  optionally type a scripture ("Alma 32:21", "Moroni 10:4-5"), optionally add a link.
+  Sharing a verse from the reader opens it with that scripture filled in.
+  `lib/post-input.ts` does the checks (a made-up reference is an error, not silently
+  dropped). The composer keeps what was typed after an error. `ReferencePicker` and
+  `ShareForm` were removed. VERIFICATION row 24. Not yet deployed; the deploy runs
+  migration 007 on the VPS.

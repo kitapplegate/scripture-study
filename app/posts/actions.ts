@@ -3,41 +3,37 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { preparePost } from "@/lib/post-input";
 import * as posts from "@/lib/posts";
-import { getPassage } from "@/lib/scriptures";
 import { requireUser } from "@/lib/session";
 
 const dbId = z.string().regex(/^\d{1,18}$/);
 
+// Loose shape only; lib/post-input.ts does the real checks (and the tests cover it).
 const createSchema = z.object({
-  verseId: z.string().max(40),
-  endVerseId: z.string().max(40).optional(),
-  body: z.string().trim().max(5000, "Keep it under 5,000 characters."),
-  linkUrl: z
-    .union([z.literal(""), z.url({ protocol: /^https$/, error: "Links must be a full https:// address." }).max(500)])
-    .optional(),
+  body: z.string().max(10000).optional(),
+  reference: z.string().max(200).optional(),
+  linkUrl: z.string().max(1000).optional(),
+  returnTo: z.string().max(10).optional(),
 });
 
-export type FormState = { error?: string };
+export type FormState = { error?: string; values?: { body: string; reference: string; linkUrl: string } };
 
 export async function createPostAction(_prev: FormState, formData: FormData): Promise<FormState> {
   const user = await requireUser();
   const parsed = createSchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Check the form and try again." };
+  if (!parsed.success) return { error: "Check the form and try again." };
+  const { body = "", reference = "", linkUrl = "", returnTo } = parsed.data;
 
-  const passage = await getPassage(parsed.data.verseId, parsed.data.endVerseId || null);
-  if (!passage) return { error: "That verse wasn't found." };
+  const prepared = await preparePost({ body, reference, linkUrl });
+  // Send back what was typed, so the form keeps it after an error.
+  if (!prepared.ok) return { error: prepared.error, values: { body, reference, linkUrl } };
 
-  await posts.createPost({
-    authorId: user.id,
-    verseId: passage.id,
-    endVerseId: passage.endId ?? null,
-    body: parsed.data.body,
-    linkUrl: parsed.data.linkUrl || null,
-  });
+  await posts.createPost({ authorId: user.id, ...prepared.post });
   revalidatePath("/feed");
   revalidatePath("/");
-  redirect("/");
+  // Only two places to return to; never an arbitrary URL from the form.
+  redirect(returnTo === "/feed" ? "/feed" : "/");
 }
 
 export async function deletePostAction(formData: FormData) {

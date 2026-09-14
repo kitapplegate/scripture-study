@@ -3,7 +3,7 @@ import { unstable_rethrow } from "next/navigation";
 import { AssistantChat } from "@/components/assistant/AssistantChat";
 import { ComeFollowMeCard } from "@/components/ComeFollowMeCard";
 import { PostCard } from "@/components/PostCard";
-import { ReferencePicker } from "@/components/ReferencePicker";
+import { PostComposer } from "@/components/PostComposer";
 import { assistantConfigured, assistantProviderLabels } from "@/lib/llm";
 import { listFeed } from "@/lib/posts";
 import { getSession } from "@/lib/session";
@@ -35,7 +35,7 @@ export default async function HomePage() {
             <Link href="/feed" className="text-sm text-muted hover:text-accent">All posts →</Link>
           </div>
           <div className="mb-4 rounded-xl border border-line bg-card p-4">
-            <ReferencePicker buttonLabel="New post" />
+            <PostComposer returnTo="/" />
             <p className="mt-2 text-xs text-muted">Or tap any verse while you're reading, then Share.</p>
           </div>
           {posts.length === 0 ? (

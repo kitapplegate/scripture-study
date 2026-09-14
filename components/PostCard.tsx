@@ -28,8 +28,8 @@ export function PostCard({
         </time>
       </header>
 
-      <VerseCard verseId={post.verse_id} endVerseId={post.end_verse_id} />
-      {post.body && <p className="mt-3 whitespace-pre-wrap break-words">{post.body}</p>}
+      {post.verse_id && <VerseCard verseId={post.verse_id} endVerseId={post.end_verse_id} />}
+      {post.body && <p className={`${post.verse_id ? "mt-3 " : ""}whitespace-pre-wrap break-words`}>{post.body}</p>}
       {post.link_url && (
         <a
           href={post.link_url}

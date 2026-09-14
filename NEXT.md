@@ -6,6 +6,10 @@
 
 **Why now:** Every launch check passed on 2026-09-14 (VERIFICATION rows 7, 15, 19, 20, 21). The family is waiting.
 
+**Deploy pending (needs Kit's OK):** free-form family posts (VERIFICATION row 24) are committed locally, not on the VPS. Push, then `deploy.sh`; its `db:migrate` step applies `migrations/007` there. Then post a text-only update on the live feed.
+
+**Waiting on Kit, assistant speed:** the VPS `.env` has `GEMINI_MODELS=gemini-3.5-flash-lite` (set 2026-09-14), but probes showed Gemini's free tier is slow off and on (28–42s for a one-word reply) while Groq answered in 0.4–0.6s. The recommendation is `ASSISTANT_PROVIDERS=groq,gemini` (restart only, no code). OpenRouter's `thinkingmachines/inkling:free` now returns 403 ("only available on agentic harnesses"), so that backup is dead either way.
+
 **Deployed 2026-09-14:** the assistant popup and saved-chat fix (`5ca7624`, VERIFICATION row 23) is live. Still to confirm on Kit's phone: tap a verse in an answer, close the popup, tap it again; then Read the chapter → Back keeps the chat. The deploy took about a minute (`deploy.sh` runs `npm ci`, migrations, and the build before restarting). An assistant request running at that moment took 131.7s and ended with finish reason `other`, so it may have been cut off.
 
 **Then, the best next slice:** make the study assistant faster. The live answer took 68s (Gemini Flash, 5 tool steps, 11,761 tokens). Start by reading `lib/assistant-prompt.ts` and the tool loop behind `app/api/assistant` for the step limit and how many searches it runs. **Verify with:** the same question on dev ("Scriptures about hearts knit together in unity") answers in well under 30s with the citations still checked (`tests/citations-plain.test.ts`, `tests/live-regressions.test.ts`).

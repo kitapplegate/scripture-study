@@ -20,7 +20,7 @@ export type FeedPost = {
   id: string;
   author_id: string;
   author_name: string;
-  verse_id: string;
+  verse_id: string | null; // null for a post without a scripture
   end_verse_id: string | null;
   body: string;
   link_url: string | null;
@@ -71,13 +71,10 @@ export async function getPost(viewerId: string, postId: string) {
   return rows[0] ?? null;
 }
 
-export async function createPost(input: {
-  authorId: string;
-  verseId: string;
-  endVerseId?: string | null;
-  body: string;
-  linkUrl: string | null;
-}) {
+export type NewPost = { body: string; verseId: string | null; endVerseId?: string | null; linkUrl: string | null };
+
+// The scripture is optional; the database refuses a post with neither text nor a scripture.
+export async function createPost(input: NewPost & { authorId: string }) {
   const { rows } = await pool.query<{ id: string }>(
     "INSERT INTO posts (author_id, verse_id, end_verse_id, body, link_url) VALUES ($1, $2, $3, $4, $5) RETURNING id",
     [input.authorId, input.verseId, input.endVerseId ?? null, input.body, input.linkUrl],

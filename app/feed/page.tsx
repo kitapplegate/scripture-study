@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PostCard } from "@/components/PostCard";
-import { ReferencePicker } from "@/components/ReferencePicker";
+import { PostComposer } from "@/components/PostComposer";
 import { FEED_PAGE_SIZE, listFeed } from "@/lib/posts";
 import { requireUser } from "@/lib/session";
 
@@ -19,7 +19,7 @@ export default async function FeedPage({ searchParams }: Props) {
     <>
       <h1 className="mb-4 font-serif text-3xl font-semibold">Family feed</h1>
       <div className="mb-6 rounded-xl border border-line bg-card p-4">
-        <ReferencePicker buttonLabel="New post" />
+        <PostComposer returnTo="/feed" />
         <p className="mt-2 text-xs text-muted">Or tap any verse while you're reading, then Share.</p>
       </div>
 
