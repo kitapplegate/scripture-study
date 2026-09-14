@@ -60,7 +60,7 @@ export default async function HomePage() {
             <Link href="/study" className="text-sm text-muted hover:text-accent">Full page →</Link>
           </div>
           {assistantConfigured() ? (
-            <AssistantChat compact />
+            <AssistantChat compact userId={user.id} />
           ) : (
             <p className="text-sm text-muted">The assistant isn't set up yet.</p>
           )}

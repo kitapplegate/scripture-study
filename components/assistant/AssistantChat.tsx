@@ -3,6 +3,7 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { useEffect, useRef, useState } from "react";
+import { clearChat, loadChat, saveChat } from "@/lib/assistant-history";
 import { CitationPanel } from "./CitationPanel";
 import { CitedMarkdown } from "./CitedMarkdown";
 import { useCitations } from "./useCitations";
@@ -24,12 +25,47 @@ function friendlyError(error: Error) {
   }
 }
 
+// sessionStorage can be missing or throw (private windows, blocked site data).
+function tabStorage() {
+  try {
+    return window.sessionStorage;
+  } catch {
+    return undefined;
+  }
+}
+
 // `compact` is the home-page panel: fewer starters, and the conversation scrolls inside
-// the panel instead of moving the whole page.
-export function AssistantChat({ compact = false }: { compact?: boolean }) {
+// the panel instead of moving the whole page. The conversation is saved in the tab per
+// member (lib/assistant-history.ts), so the home panel and the full page share it, and
+// reading a verse or pressing Back doesn't lose it.
+export function AssistantChat({ compact = false, userId }: { compact?: boolean; userId: string }) {
   const [input, setInput] = useState("");
-  const { messages, sendMessage, status, stop, error, regenerate } = useChat({ transport });
+  const { messages, setMessages, sendMessage, status, stop, error, regenerate } = useChat({ transport });
   const busy = status === "submitted" || status === "streaming";
+  const [restored, setRestored] = useState(false);
+  const restoredFor = useRef<string | null>(null);
+
+  // Bring back this member's conversation from earlier in this tab. Loaded after mount,
+  // because storage doesn't exist during the server render.
+  useEffect(() => {
+    if (restoredFor.current === userId) return;
+    restoredFor.current = userId;
+    const saved = loadChat<UIMessage>(tabStorage(), userId);
+    if (saved.messages.length > 0) setMessages(saved.messages);
+    if (saved.draft) setInput(saved.draft);
+    setRestored(true);
+  }, [userId, setMessages]);
+
+  // Save when an answer finishes and as the draft changes; never a half-streamed answer.
+  useEffect(() => {
+    if (restored && !busy) saveChat(tabStorage(), userId, { messages, draft: input });
+  }, [restored, busy, messages, input, userId]);
+
+  function startOver() {
+    setMessages([]);
+    setInput("");
+    clearChat(tabStorage(), userId);
+  }
   const bottomRef = useRef<HTMLDivElement>(null);
   const scrollBox = useRef<HTMLDivElement>(null);
 
@@ -61,6 +97,14 @@ export function AssistantChat({ compact = false }: { compact?: boolean }) {
               {s}
             </button>
           ))}
+        </div>
+      )}
+
+      {messages.length > 0 && !busy && (
+        <div className="-mt-2 mb-1 flex justify-end">
+          <button type="button" onClick={startOver} className="min-h-11 px-2 text-sm text-muted hover:text-accent">
+            Start over
+          </button>
         </div>
       )}
 

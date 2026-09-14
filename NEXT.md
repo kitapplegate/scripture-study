@@ -6,6 +6,8 @@
 
 **Why now:** Every launch check passed on 2026-09-14 (VERIFICATION rows 7, 15, 19, 20, 21). The family is waiting.
 
+**Deploy pending (needs Kit's OK):** the assistant popup and saved-chat fix (VERIFICATION row 23) is committed locally but not on the VPS. Push, then `ssh root@<vps> /opt/knit/app-src/deploy/deploy.sh`. It pulls, runs `npm ci`, migrates (safe to re-run), builds, restarts, and checks `/sign-in`. Afterward, Kit taps a verse in an assistant answer on his phone, closes the popup, and taps it again.
+
 **Then, the best next slice:** make the study assistant faster. The live answer took 68s (Gemini Flash, 5 tool steps, 11,761 tokens). Start by reading `lib/assistant-prompt.ts` and the tool loop behind `app/api/assistant` for the step limit and how many searches it runs. **Verify with:** the same question on dev ("Scriptures about hearts knit together in unity") answers in well under 30s with the citations still checked (`tests/citations-plain.test.ts`, `tests/live-regressions.test.ts`).
 
 **Waiting on Kit:**

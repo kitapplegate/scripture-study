@@ -1,14 +1,18 @@
 "use client";
 
-import Link from "next/link";
+import { useState } from "react";
 import Markdown, { defaultUrlTransform } from "react-markdown";
 import { citationsToLinks } from "@/lib/citations";
 import type { CitationMap } from "./useCitations";
+import { VersePopup, type FoundPassage } from "./VersePopup";
 
 // Renders model-written markdown safely: no raw HTML (react-markdown's default), no
 // images, only https links, and [[citations]] as chips checked against real scripture.
+// Tapping a chip opens the verse in a popup, so reading it doesn't leave the conversation.
 export function CitedMarkdown({ text, citations }: { text: string; citations?: CitationMap }) {
+  const [open, setOpen] = useState<FoundPassage | null>(null);
   return (
+    <>
     <div className="md">
       <Markdown
         disallowedElements={["img"]}
@@ -27,9 +31,9 @@ export function CitedMarkdown({ text, citations }: { text: string; citations?: C
                 );
               }
               return (
-                <Link href={c.href} className="rounded bg-hl px-1 font-medium text-accent hover:underline">
+                <button type="button" onClick={() => setOpen({ ...c })} className="rounded bg-hl px-1 font-medium text-accent hover:underline">
                   {c.reference}
-                </Link>
+                </button>
               );
             }
             if (!href.startsWith("https://")) return <>{children}</>;
@@ -44,5 +48,8 @@ export function CitedMarkdown({ text, citations }: { text: string; citations?: C
         {citationsToLinks(text, citations ? [...citations.keys()] : [])}
       </Markdown>
     </div>
+    {/* Outside .md, whose sibling margins would pull the dialog off center. */}
+    <VersePopup passage={open} />
+    </>
   );
 }

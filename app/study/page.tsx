@@ -44,7 +44,7 @@ export default async function StudyPage() {
       </section>
 
       {assistantConfigured() ? (
-        <AssistantChat />
+        <AssistantChat userId={user.id} />
       ) : (
         <div className="rounded-xl border border-dashed border-line p-6 text-sm text-muted">
           The assistant isn't set up yet. Add an AI provider key (<code>GEMINI_API_KEY</code>, <code>GROQ_API_KEY</code>,

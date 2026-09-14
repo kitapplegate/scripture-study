@@ -573,3 +573,12 @@ anyway.
   reset their password through a reset link; then it was deleted. The assistant took 68s
   (Gemini Flash, 5 tool steps): it works, but it's slow enough to look at after launch.
   Still open: Kit's phone check and confirming the first scheduled backup.
+- **2026-09-14** — **Bug fix (Kit): reading a cited verse lost the assistant
+  conversation.** Verse chips were links to the reader, and the chat lived only in memory.
+  Now a tap opens the verse in a popup (`components/assistant/VersePopup.tsx`, a native
+  `<dialog>` with Add to talk and Read the chapter), for chips in the answer and for the
+  "Scriptures cited" list alike. The conversation and unsent draft are also saved in the
+  tab's `sessionStorage`, per member, capped at 30 messages (`lib/assistant-history.ts`).
+  So Back, a reload, or going from the home panel to the full page keeps it, and "Start
+  over" clears it. Principle 4 holds: it stays in that browser tab, is never sent
+  anywhere, and is gone when the tab closes. VERIFICATION row 23. Not yet deployed.
