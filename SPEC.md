@@ -603,3 +603,9 @@ anyway.
   429), not when it's slow. OpenRouter's `thinkingmachines/inkling:free` started
   returning 403 ("only available on agentic harnesses"). Local dev still uses the code
   defaults unless `.env.local` sets the same values.
+- **2026-09-14** — **Knit DB password rotated (Kit approved).** Verification commands had
+  passed `DATABASE_URL` to `sudo -u knit psql`, and sudo logs full command lines, so the
+  password landed in the VPS journal and auth log. A new password was generated on the box
+  and applied without appearing on any command line or in any output. The app's
+  connection, sign-in, and the nightly backup (peer auth) were checked afterward.
+  BOOTSTRAP §3 now uses `sudo -u postgres psql -d knit` for DB checks.
