@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { deletePostAction, toggleReactionAction } from "@/app/posts/actions";
 import { ConfirmSubmit } from "@/components/ConfirmSubmit";
+import { ReactionButtons } from "@/components/ReactionButtons";
 import { VerseCard } from "@/components/VerseCard";
 import { timeAgo } from "@/lib/format";
-import { REACTIONS, REACTION_KINDS, type Actor, type FeedPost } from "@/lib/posts";
+import type { Actor, FeedPost } from "@/lib/posts";
 
 export function PostCard({
   post,
@@ -46,25 +47,12 @@ export function PostCard({
       )}
 
       <footer className="mt-4 flex flex-wrap items-center gap-2 text-sm">
-        {REACTION_KINDS.map((kind) => {
-          const mine = post.my_reactions.includes(kind);
-          const count = post.reaction_counts[kind] ?? 0;
-          return (
-            <form key={kind} action={toggleReactionAction}>
-              <input type="hidden" name="postId" value={post.id} />
-              <input type="hidden" name="kind" value={kind} />
-              <button
-                type="submit"
-                aria-pressed={mine}
-                aria-label={`${REACTIONS[kind].label}${count ? ` (${count})` : ""}`}
-                className={`inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border px-2.5 py-1 ${mine ? "border-accent bg-hl" : "border-control hover:border-accent"}`}
-              >
-                {REACTIONS[kind].emoji}
-                {count > 0 && <span className="ml-1">{count}</span>}
-              </button>
-            </form>
-          );
-        })}
+        <ReactionButtons
+          counts={post.reaction_counts}
+          mine={post.my_reactions}
+          action={toggleReactionAction}
+          fields={{ postId: post.id }}
+        />
         <div className="ml-auto flex items-center gap-3">
           {linkToPost && (
             <Link href={`/posts/${post.id}`} className="text-muted hover:text-accent">

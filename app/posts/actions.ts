@@ -103,3 +103,12 @@ export async function toggleReactionAction(formData: FormData) {
   revalidatePath("/");
   revalidatePath(`/posts/${postId}`);
 }
+
+const commentReactionSchema = z.object({ commentId: dbId, kind: z.enum(posts.REACTION_KINDS) });
+
+export async function toggleCommentReactionAction(formData: FormData) {
+  const user = await requireUser();
+  const { commentId, kind } = commentReactionSchema.parse(Object.fromEntries(formData));
+  const result = await posts.toggleCommentReaction(user.id, commentId, kind);
+  if (result) revalidatePath(`/posts/${result.postId}`);
+}

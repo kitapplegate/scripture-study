@@ -6,6 +6,10 @@
 
 **Why now:** Every launch check passed on 2026-09-14 (VERIFICATION rows 7, 15, 19, 20, 21). The family is waiting.
 
+**Deploy pending (needs Kit's OK):** reactions on comments (VERIFICATION row 27), with migration 008. Push, then `deploy.sh` (it applies 008). It has never been rendered: after the deploy, check a post page with a throwaway member in headless Chrome (react on a comment, reload, count shows, react again to remove), or Kit tries it on his phone.
+
+**Local dev server: keep it off** (Kit, 2026-09-14). The PC runs low on memory; verify on the live site after deploying instead.
+
 **Deployed 2026-09-14 (`d12ee8d`):** post editing (VERIFICATION row 25) and the feed-first home page (row 26). Still to confirm on Kit's phone: fix a typo in one of his own posts (Edit → Save changes → "· edited"), and the home page shows posts on the first screen with the "Write a post…" bar.
 
 **Security, done 2026-09-14: the knit database password was rotated** after verification commands logged it via `sudo -u knit psql "$DATABASE_URL"` (and it was printed into the Claude session). The new one was generated on the VPS and never printed. Postgres `log_statement` is `none`, so the `ALTER ROLE` wasn't logged. It went in through stdin, and `.env` was rewritten via an environment variable (still knit:knit 600). Checks: knit restarted, `/sign-in` 200, the app's `.env` credentials connect as `knit`, a sign-in attempt through the app got 401 (reached the DB), and no journal lines since contain a knit DB URL. Kit doesn't need the password: it lives in `/opt/knit/app-src/.env`, and hands-on DB access is `sudo -u postgres psql -d knit` (no password). If it's ever lost, rotate again the same way.

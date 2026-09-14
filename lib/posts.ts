@@ -38,6 +38,8 @@ export type PostComment = {
   author_name: string;
   body: string;
   created_at: Date;
+  reaction_counts: Partial<Record<ReactionKind, number>>;
+  my_reactions: ReactionKind[];
 };
 
 export const FEED_PAGE_SIZE = 30;
@@ -103,13 +105,19 @@ export async function deletePost(actor: Actor, postId: string) {
   return rowCount === 1;
 }
 
-export async function listComments(postId: string) {
+// $1 is the viewer's user id (for my_reactions).
+export async function listComments(viewerId: string, postId: string) {
   const { rows } = await pool.query<PostComment>(
-    `SELECT c.id, c.post_id, c.author_id, u.name AS author_name, c.body, c.created_at
+    `SELECT c.id, c.post_id, c.author_id, u.name AS author_name, c.body, c.created_at,
+            COALESCE((SELECT json_object_agg(k.kind, k.n)
+                      FROM (SELECT kind, count(*)::int AS n FROM comment_reactions r
+                            WHERE r.comment_id = c.id GROUP BY kind) k), '{}'::json) AS reaction_counts,
+            COALESCE((SELECT array_agg(r.kind) FROM comment_reactions r
+                      WHERE r.comment_id = c.id AND r.user_id = $1::text), '{}'::text[]) AS my_reactions
      FROM comments c JOIN "user" u ON u.id = c.author_id
-     WHERE c.post_id = $1::bigint
+     WHERE c.post_id = $2::bigint
      ORDER BY c.created_at, c.id`,
-    [postId],
+    [viewerId, postId],
   );
   return rows;
 }
@@ -149,4 +157,24 @@ export async function toggleReaction(userId: string, postId: string, kind: React
     [postId, userId, kind],
   );
   return added.rowCount === 1;
+}
+
+// The same toggle for a comment. Returns whether it's now on and the comment's post (for
+// refreshing that page), or null if the comment doesn't exist.
+export async function toggleCommentReaction(userId: string, commentId: string, kind: ReactionKind) {
+  const { rows } = await pool.query<{ post_id: string }>("SELECT post_id FROM comments WHERE id = $1::bigint", [commentId]);
+  const postId = rows[0]?.post_id;
+  if (!postId) return null;
+  const removed = await pool.query(
+    "DELETE FROM comment_reactions WHERE comment_id = $1::bigint AND user_id = $2::text AND kind = $3::text",
+    [commentId, userId, kind],
+  );
+  if (removed.rowCount) return { on: false, postId };
+  const added = await pool.query(
+    `INSERT INTO comment_reactions (comment_id, user_id, kind)
+     SELECT $1::bigint, $2::text, $3::text WHERE EXISTS (SELECT 1 FROM comments WHERE id = $1::bigint)
+     ON CONFLICT DO NOTHING`,
+    [commentId, userId, kind],
+  );
+  return { on: added.rowCount === 1, postId };
 }

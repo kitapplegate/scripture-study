@@ -622,3 +622,8 @@ anyway.
   jump ahead of the feed). The home composer is collapsed to a "Write a post…" bar that
   opens on tap, so posts show on the first screen. On desktop the first post moved up from
   754px to 434px. The Feed page keeps its full composer. VERIFICATION row 26.
+- **2026-09-14** — **Reactions on comments (Kit).** Each comment on a post's page gets the
+  same ❤️ 🙏 💡 buttons as posts (`migrations/008`, `comment_reactions`; shared
+  `components/ReactionButtons.tsx`). One of each kind per member per comment, and they're
+  deleted with the comment. VERIFICATION row 27. Unit-tested; not yet rendered in a browser
+  or deployed.
