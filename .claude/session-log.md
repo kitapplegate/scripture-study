@@ -1,5 +1,30 @@
 # Session Log
 
+## 2026-09-13 22:22
+
+**Summary:** Launch found the repo matching the log (typecheck clean, `npm test` 100/100, Postgres up, 3.6 GB free), but Kit set the planned T3 print view aside for two requests. **Come, Follow Me (`bb28b03`)**, the first half of SPEC slice 12: `lib/come-follow-me.ts` holds lessons 37–52 of the 2026 Old Testament manual (Monday start date, readings, lesson title), `components/ComeFollowMeCard.tsx` renders it at the top of the signed-in home page with the title linking to the lesson on churchofjesuschrist.org and each reading part ("Proverbs 1–4; 15–16; …") linking to its first chapter in our reader, and `tests/come-follow-me.test.ts` adds 9 tests. To keep principle 2, the Church's site was never fetched: titles and URLs came from web-search result headings, recorded in `data/SOURCES.md`. A third-party schedule site was checked first but dropped because its titles were paraphrased and at least one reading was wrong (Jeremiah 36–38 instead of 36–39). The week turns over at Monday midnight `America/New_York`, a guess Kit hasn't confirmed. **Rename to Knit (`9f9cc28`)**, after Mosiah 18:21: title template, header, welcome and invite headings, README and SPEC titles. The package name and the `scripture-study:last-talk` localStorage key are deliberately unchanged, since renaming the key would drop members' saved last talk. A web search found other apps named Knit (events, a seniors/family social network, a messenger, a knitting counter) but none for scripture or faith; fine for a private app, revisit before any public listing. **DNS:** Kit created the Cloudflare A record for `scriptures.marzipan-solutions.com`. The first lookup was NXDOMAIN because of a typo in the record name; after he fixed it, 1.1.1.1 and 8.8.8.8 both resolve it to the VPS, DNS only. Cloudflare's "enable proxy to protect your origin" warning was judged low-value because `recipes.marzipan-solutions.com` already exposes the same IP unproxied, so real origin protection would be a whole-VPS project. The IP was kept out of the SPEC; Kit declined scrubbing it from the earlier unpushed session-log commit `42558e2`. The dev-server 500s from last session were memory pressure and didn't recur.
+
+**Status:**
+- **Come, Follow Me card:** tested in integration.
+  - `npm test` 109/109, including the 9 new tests.
+  - curl as a throwaway member on the dev server showed lesson 37, its lesson link, and all six reading links; signed-out home has no card.
+  - Not yet viewed in a browser.
+- **Rename to Knit:** tested in integration. curl of the signed-out home page showed the new title, header, and heading; `npm run typecheck` clean.
+- **DNS record:** verified in the real environment (public resolvers return the VPS).
+- **Home layout with the new card, production build:** not re-verified since these changes.
+
+**Next:** Talk builder T3, the print view built from capsules (see `NEXT.md`).
+
+**Open tasks:**
+- [ ] next — T3 print view from capsules; verify with `npm test` plus curl of `/talks/<id>/print` as a throwaway member (order and verse text; another member's talk → 404)
+- [ ] blocked-by-Kit — try dragging and Add to talk in the browser (or OK me testing in his session); confirm the family's time zone for the Come, Follow Me week (currently America/New_York)
+- [ ] not-yet-verified — builder drag/autosave and Add to talk in a real browser; home page layout with the card at phone width; `npx next build` after today's changes
+
+**Deferred:**
+- Come, Follow Me: the weekly discussion thread (other half of slice 12), and the 2027 schedule, needed before 2026-12-28 or the card disappears.
+- Pre-ship checklist: trusted client IP for rate limiting behind Caddy, admin password-reset link, VPS deploy, nightly `pg_dump`.
+- Push `c9933de`…`9f9cc28` when Kit asks.
+
 ## 2026-09-13 21:35
 
 **Summary:** Built the scripture study app from an empty folder to a working local app, in three commits.
