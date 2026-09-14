@@ -527,3 +527,15 @@ anyway.
 - **2026-09-14** — **Recipes stay separate** (Kit; D9 reversed): some family members
   aren't spiritual, so recipe-chat keeps its own app at `recipes.`. Knit launches as
   scripture study only.
+- **2026-09-14** — **Deploy prep (slice 2, local half).** `deploy/` follows the
+  conventions fantasy-football set on the VPS: `/opt/knit`, a `knit` system user,
+  `knit.service` on `127.0.0.1:3102` with `ProtectSystem=strict`, a Caddy block, a
+  `deploy.sh` (pull, `npm ci`, `db:migrate`, `next build`, restart, check `/sign-in`),
+  a nightly `pg_dump` cron at 04:45 keeping 14 days, `env.example`, and a step-by-step
+  `BOOTSTRAP.md`. `npm run build` passes. The backup script was proven locally, including
+  that a failed dump leaves no file. **Codex layout/color audit** (read-only, run at
+  Kit's request): field and card borders are 1.25–1.33:1 (need 3:1), placeholders fail
+  contrast, most phone tap targets are under 44px, the phone nav hides links offscreen,
+  the dark-mode failed-tool chip is 2.65:1, and print has no forced light palette. The
+  contrast numbers were re-computed independently and match. Which ones to fix before
+  launch is Kit's call.

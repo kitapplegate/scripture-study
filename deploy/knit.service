@@ -1,0 +1,39 @@
+# /etc/systemd/system/knit.service
+#
+# Install (see deploy/BOOTSTRAP.md §5):
+#   sudo cp deploy/knit.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now knit
+#
+# Same pattern as ff-web and recipe-chat-web on this VPS: its own system user, bound to
+# 127.0.0.1 so only Caddy can reach it, hardened with ProtectSystem=strict. Binding to
+# localhost is load-bearing: lib/auth.ts trusts X-Forwarded-For from loopback hops for
+# sign-in rate limiting, which is only safe when every request comes through Caddy.
+# Port 3102: 3100 is ff-web and 3101 is recipe-chat-web.
+
+[Unit]
+Description=Knit scripture study (Next.js)
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=knit
+Group=knit
+WorkingDirectory=/opt/knit/app-src
+EnvironmentFile=/opt/knit/app-src/.env
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/npm run start -- --hostname 127.0.0.1 --port 3102
+
+Restart=always
+RestartSec=2
+
+# The app reads data/scriptures/ and writes nothing at runtime except Next's cache.
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/opt/knit/app-src/.next
+
+[Install]
+WantedBy=multi-user.target

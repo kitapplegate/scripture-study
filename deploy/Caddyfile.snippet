@@ -1,0 +1,17 @@
+# Append to /etc/caddy/Caddyfile, then:
+#   caddy validate --config /etc/caddy/Caddyfile && systemctl reload caddy
+#
+# Validate before reloading: that file also serves recipes., fantasyfootball., and
+# mtg-price-tracker.cloud, so a syntax error takes them down too.
+#
+# DNS: knit.marzipan-solutions.com is an A record to the VPS, DNS only (grey cloud),
+# resolving since 2026-09-14. Not proxied, so Caddy gets its own certificate and the
+# client address it sees is the member's real IP.
+#
+# reverse_proxy sets X-Forwarded-For itself. The app listens on 127.0.0.1:3102 only
+# (deploy/knit.service), so this is the only way in.
+
+knit.marzipan-solutions.com {
+	encode gzip
+	reverse_proxy 127.0.0.1:3102
+}
