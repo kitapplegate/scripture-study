@@ -625,5 +625,5 @@ anyway.
 - **2026-09-14** — **Reactions on comments (Kit).** Each comment on a post's page gets the
   same ❤️ 🙏 💡 buttons as posts (`migrations/008`, `comment_reactions`; shared
   `components/ReactionButtons.tsx`). One of each kind per member per comment, and they're
-  deleted with the comment. VERIFICATION row 27. Unit-tested; not yet rendered in a browser
-  or deployed.
+  deleted with the comment. VERIFICATION row 27. Unit-tested and deployed the same day
+  (`605bd71`, migration 008 applied on the VPS); not yet seen in a browser.

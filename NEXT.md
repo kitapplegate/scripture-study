@@ -6,7 +6,7 @@
 
 **Why now:** Every launch check passed on 2026-09-14 (VERIFICATION rows 7, 15, 19, 20, 21). The family is waiting.
 
-**Deploy pending (needs Kit's OK):** reactions on comments (VERIFICATION row 27), with migration 008. Push, then `deploy.sh` (it applies 008). It has never been rendered: after the deploy, check a post page with a throwaway member in headless Chrome (react on a comment, reload, count shows, react again to remove), or Kit tries it on his phone.
+**Deployed 2026-09-14 (`605bd71`):** reactions on comments (VERIFICATION row 27; migration 008 applied on the VPS). **It hasn't been seen in a browser yet.** Kit: open a post with a comment and tap ❤️ under the comment (the count shows, and a second tap removes it). Or, with Kit's OK, run a headless-Chrome check with a throwaway member.
 
 **Local dev server: keep it off** (Kit, 2026-09-14). The PC runs low on memory; verify on the live site after deploying instead.
 
