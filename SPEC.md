@@ -457,3 +457,13 @@ anyway.
 
   **Not yet verified:** adding a scripture through the button in a real browser
   (needs Kit), and dragging in the builder.
+- **2026-09-13** — **Slice 12, first half: Come, Follow Me week on the home page**
+  (Kit asked for it ahead of T3). `lib/come-follow-me.ts` holds lessons 37–52 of the
+  2026 Old Testament manual: start date, readings, and the lesson title used only as
+  link text to churchofjesuschrist.org (principle 2 holds: no manual text stored, and
+  the Church's site was never fetched; see `data/SOURCES.md`). Readings link into our
+  reader. The week turns over Monday midnight `America/New_York`. Signed-in home only.
+  `tests/come-follow-me.test.ts` 9/9; curl as a throwaway member showed lesson 37
+  with all six reading links, signed-out home shows none. **Gap:** the card vanishes
+  on 2026-12-28 unless the 2027 weeks are added. The weekly discussion thread (the
+  other half of slice 12) isn't built.

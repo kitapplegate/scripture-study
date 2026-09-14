@@ -43,3 +43,13 @@ Index, the D&C section introductions, Official Declaration 2, and the JST excerp
 Also missing: Official Declaration 1 (1890, public domain, but not in the dataset;
 could be hand-added) and the Book of Abraham facsimile images (the dataset's image
 URLs point at retired lds.org paths).
+
+## Come, Follow Me schedule
+
+`lib/come-follow-me.ts` holds the 2026 week list: start date, reading assignment, and
+lesson title, which is shown only as the text of a link to the lesson on
+churchofjesuschrist.org. None of the manual's text is stored. The entries were typed
+in by hand on 2026-09-13 from the lesson headings as they appear in web search results
+(for example "September 7–13. “He Shall Direct Thy Paths”: Proverbs 1–4; 15–16; 22; 31;
+Ecclesiastes 1–3; 11–12"). The Church's site was never fetched. It covers lessons 37–52
+only; add the 2027 manual's weeks before 2026-12-28, or the card disappears.

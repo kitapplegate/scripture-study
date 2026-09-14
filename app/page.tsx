@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { unstable_rethrow } from "next/navigation";
 import { AssistantChat } from "@/components/assistant/AssistantChat";
+import { ComeFollowMeCard } from "@/components/ComeFollowMeCard";
 import { PostCard } from "@/components/PostCard";
 import { ReferencePicker } from "@/components/ReferencePicker";
 import { assistantConfigured, assistantProviderLabels } from "@/lib/llm";
@@ -26,6 +27,7 @@ export default async function HomePage() {
   return (
     <div className="wide">
       <h1 className="mb-6 font-serif text-3xl font-semibold">Welcome, {user.name.split(" ")[0]}</h1>
+      <ComeFollowMeCard />
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_26rem] lg:items-start">
         <section aria-labelledby="feed-heading" className="min-w-0">
           <div className="mb-3 flex items-baseline justify-between gap-3">
