@@ -158,8 +158,9 @@ anyway.
 - **D4 — shape of the social side** — ✅ resolved 2026-09-13: a feed of verse posts
   with comments and reactions, plus a weekly Come Follow Me discussion thread. **No
   live chat.**
-- **D5 — subdomain** — ✅ resolved 2026-09-13: `scriptures.marzipan-solutions.com`.
-  Kit adds the DNS record when it's time to deploy.
+- **D5 — subdomain** — ✅ resolved 2026-09-13, **changed 2026-09-14** (Kit):
+  `knit.marzipan-solutions.com`, replacing `scriptures.marzipan-solutions.com`. Kit
+  renames the Cloudflare record; nothing was deployed or configured under the old name.
 - **D7 — build order** — ✅ resolved 2026-09-13: build and debug everything locally
   first; deploy (slice 2) comes after the local slices are solid.
 - **D6 — test model** — ✅ resolved 2026-09-13 (Kit: "pick the best free model"):
@@ -175,6 +176,15 @@ anyway.
 - **D8 — groups** — ✅ decided 2026-09-13 (default): for now the whole invited
   circle is one group, so every member sees the feed. The `groups` tables wait until
   there's a real need for more than one circle.
+- **D9 — family hub** — ✅ decided 2026-09-14 (Kit): Knit becomes the family's one app.
+  Scripture study is its first section. `recipe-chat` (live at `recipes.`) gets ported
+  in after Knit launches, and future family apps (the book list) are built inside
+  Knit rather than as separate apps. The order: finish and deploy Knit, then port
+  recipes in thin slices with one login and one database. Members join by Knit invite.
+  Old recipe-chat passwords aren't migrated. recipe-chat stays live until the port
+  reaches parity, then `recipes.` redirects to Knit. **Principle 1 still applies:**
+  recipe-chat's repo tracks the family's recipes (`data/recipes_export.json`), and
+  they must be loaded from outside this public repo, never committed here.
 
 ## Status updates
 
@@ -479,3 +489,8 @@ anyway.
   Deploy is no longer blocked on DNS. Because it isn't proxied, Caddy can get its own
   certificate directly, and the client IP for rate limiting comes from Caddy, not
   `CF-Connecting-IP`.
+- **2026-09-14** — **Direction: Knit becomes the family hub** (Kit; D9). Scripture
+  study, then recipes ported from `recipe-chat`, then the book list, all in one app
+  with one login. Recipes wait until Knit is live. **Subdomain changed** to
+  `knit.marzipan-solutions.com` (D5). Checked first: no code, env, or Caddy config
+  referenced the old name, only docs.
