@@ -1,16 +1,17 @@
 # Next
 
-**Action:** Finish launch (`deploy/BOOTSTRAP.md` §7–9). Knit is live at `https://knit.marzipan-solutions.com` (§0–6 done 2026-09-14).
-1. §7: create Kit's admin invite on the VPS (`sudo -u knit env HOME=/opt/knit npm run invite -- admin "Kit"` from `/opt/knit/app-src`). Hand Kit the link, and he creates his account.
-2. §8: install the nightly backup (cron as postgres at 04:45, 14 days) and prove it with one manual run plus `gunzip -t`.
-3. §9: Kit on his phone (talk builder touch dragging, "More" menu); one invite and one reset link end to end with a test member, deleted afterward; the assistant answers one question.
+**Action:** Finish launch (`deploy/BOOTSTRAP.md` §9). Knit is live at `https://knit.marzipan-solutions.com`. §0–8 were done 2026-09-14: the admin invite was created and the nightly backup was installed and proven by hand.
+1. Confirm Kit's account exists with role `admin` (he signs up from the one-time invite he was given; it expires 2026-09-21).
+2. §9: Kit on his phone (talk builder touch dragging, "More" menu); one invite and one reset link end to end with a test member, deleted afterward; the assistant answers one question; check `/var/log/knit-backup.log` after the first scheduled run (2026-09-15 04:45 UTC).
+3. Then Kit invites the family from `/admin`.
 
-**Why now:** The site is up, but nobody can sign in yet, and there's no backup. The family is waiting.
+**Why now:** Everything's in place except Kit's own account and the final checks. The family is waiting.
 
-**Verify with:** Kit's account exists with role `admin` and `/admin` loads for him. `/var/backups/knit/knit-*.sql.gz` exists, passes `gunzip -t`, and is over 100 KB. Record the results in VERIFICATION rows 15, 20, 21, 22.
+**Verify with:** `SELECT role FROM "user" WHERE name ILIKE 'kit%'` returns `admin`; `/admin` loads for him. Record the results in VERIFICATION rows 15, 20, 22.
 
 **Waiting on Kit:**
-- OK for §7 and §8 (both change the VPS).
+- Create his account from the admin invite link.
+- OK to run the §9 test-member checks on the live site.
 - The family's time zone for the Come, Follow Me week (currently `America/New_York`).
 - Push the local doc commits made after `f1d1616` (NEXT, VERIFICATION, SPEC, BOOTSTRAP). The VPS doesn't need them to run.
 
