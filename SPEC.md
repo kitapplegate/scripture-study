@@ -510,3 +510,13 @@ anyway.
   safe only because the app binds to localhost (see Security). Proven by
   `tests/rate-limit-ip.test.ts` (fails without the setting) and a live curl on dev;
   still to confirm through Caddy at deploy.
+- **2026-09-14** — **Pre-ship: admin password-reset links** (no email is ever sent). On
+  `/admin`, "Reset a password" makes a link for a chosen member: single-use, expires in
+  24 hours, and a new link cancels the older one. `/reset/[token]` is public. Saving
+  signs the member out on every device. Built like invites (`migrations/006`, only a
+  sha256 of the token stored), because better-auth's own reset flow is built around
+  sending email and stores its tokens in plain text. The new password is still hashed
+  and saved by better-auth (`$context.password.hash`, `internalAdapter.updatePassword`).
+  Only a database admin can make a link; a role the caller claims isn't trusted.
+  `tests/password-resets.test.ts` 9/9; curl on dev confirmed the flow. **Not yet
+  verified:** clicking through both forms in a browser.

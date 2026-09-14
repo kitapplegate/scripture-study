@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { CreateInviteForm } from "@/components/CreateInviteForm";
+import { CreateResetLinkForm } from "@/components/CreateResetLinkForm";
 import { listInvites, type InviteRow } from "@/lib/invites";
+import { listMembers } from "@/lib/password-resets";
 import { requireAdmin } from "@/lib/session";
 
 export const metadata: Metadata = { title: "Invites" };
@@ -14,7 +16,7 @@ function status(invite: InviteRow) {
 
 export default async function AdminPage() {
   await requireAdmin();
-  const invites = await listInvites();
+  const [invites, members] = await Promise.all([listInvites(), listMembers()]);
 
   return (
     <>
@@ -47,6 +49,9 @@ export default async function AdminPage() {
           </table>
         </div>
       )}
+      <h2 className="mb-3 mt-10 font-serif text-2xl font-semibold">Reset a password</h2>
+      <p className="mb-3 text-sm text-muted">For someone who forgot their password. Make a link and send it to them.</p>
+      <CreateResetLinkForm members={members} />
     </>
   );
 }
