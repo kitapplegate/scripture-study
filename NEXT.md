@@ -9,7 +9,6 @@
 **Verify with:** `npm run typecheck && npm test`. Then on dev, 6 wrong passwords in a minute from one forwarded IP → 429, while a different forwarded IP still gets 401, not 429.
 
 **Waiting on Kit (doesn't block this slice):**
-- Rename the Cloudflare record `scriptures` → `knit`; then confirm it resolves with 1.1.1.1 and 8.8.8.8.
 - Browser checks: the T3 print preview (no site header/footer), dragging in the builder, Add to talk. Or OK me to test in his session.
 - The family's time zone for the Come, Follow Me week (currently `America/New_York`).
 

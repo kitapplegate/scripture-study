@@ -160,7 +160,8 @@ anyway.
   live chat.**
 - **D5 — subdomain** — ✅ resolved 2026-09-13, **changed 2026-09-14** (Kit):
   `knit.marzipan-solutions.com`, replacing `scriptures.marzipan-solutions.com`. Kit
-  renames the Cloudflare record; nothing was deployed or configured under the old name.
+  renamed the Cloudflare record (DNS only); public resolvers return the VPS for `knit.`
+  and NXDOMAIN for `scriptures.`. Nothing was deployed or configured under the old name.
 - **D7 — build order** — ✅ resolved 2026-09-13: build and debug everything locally
   first; deploy (slice 2) comes after the local slices are solid.
 - **D6 — test model** — ✅ resolved 2026-09-13 (Kit: "pick the best free model"):
