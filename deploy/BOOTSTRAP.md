@@ -18,10 +18,13 @@ ss -tlnp | grep -E ':3102\b' || echo "port 3102 free"
 ss -tlnp | grep 5432                      # Postgres on 127.0.0.1 / ::1 only
 dig +short knit.marzipan-solutions.com    # the VPS address (DNS only, not a Cloudflare IP)
 caddy version
+command -v unzip || echo "unzip missing"  # build-scriptures.mjs unzips the cross-references
 ```
 
 If the `--env-file-if-exists` line errors, upgrade Node (nodesource 22 LTS or newer)
-before continuing.
+before continuing. If `unzip` is missing, `apt-get install -y unzip`. It wasn't on the
+VPS on 2026-09-14, and `npm run db:migrate` failed with `spawnSync unzip ENOENT` until
+it was installed.
 
 ## 1. Service user and directories
 
