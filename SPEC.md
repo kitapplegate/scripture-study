@@ -566,3 +566,10 @@ anyway.
   needs; installed and added to the preflight. The rate limit was verified through the
   real Caddy (row 19). Neighboring sites were unaffected. **Remaining for launch:** first
   admin invite, nightly backup, Kit's phone check, and an invite/reset/assistant check.
+- **2026-09-14** — **Launch checks passed; ready for family invites.** Kit created his
+  admin account from the one-time invite. The nightly backup is installed (04:45 UTC, 14
+  days) and a manual run produced a valid 2.4 MB dump. On the live site, a throwaway
+  member signed up from an invite, got an assistant answer with six real citations, and
+  reset their password through a reset link; then it was deleted. The assistant took 68s
+  (Gemini Flash, 5 tool steps): it works, but it's slow enough to look at after launch.
+  Still open: Kit's phone check and confirming the first scheduled backup.
