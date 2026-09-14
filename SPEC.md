@@ -616,7 +616,7 @@ anyway.
   id can't change a post. Admins can still delete but not rewrite someone's words, and
   anyone else gets a 404 on the edit page. An edit follows the same rules as a new post
   (text or a scripture; the DB check still applies). No migration. Comment editing isn't
-  built. VERIFICATION row 25. Not yet deployed.
+  built. VERIFICATION row 25. Deployed the same day with the home page change (`d12ee8d`).
 - **2026-09-14** — **Home page puts the family feed first (Kit).** On phones the order is
   now: welcome, Come, Follow Me card, family feed, study assistant (the assistant used to
   jump ahead of the feed). The home composer is collapsed to a "Write a post…" bar that
