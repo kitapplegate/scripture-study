@@ -14,7 +14,7 @@ export default async function InvitePage({ params }: Props) {
 
   return (
     <div className="mx-auto max-w-sm">
-      <h1 className="mb-2 font-serif text-3xl font-semibold">Join Scripture Study</h1>
+      <h1 className="mb-2 font-serif text-3xl font-semibold">Join Knit</h1>
       {session ? (
         <p className="text-muted">
           You're already signed in as {session.user.name}. <Link href="/feed" className="text-accent underline">Go to the feed</Link>.

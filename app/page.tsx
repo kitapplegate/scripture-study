@@ -95,7 +95,7 @@ function Welcome() {
   return (
     <div className="wide">
       <section className="mx-auto max-w-2xl py-10 text-center sm:py-16">
-        <h1 className="font-serif text-4xl font-semibold sm:text-5xl">Scripture Study</h1>
+        <h1 className="font-serif text-4xl font-semibold sm:text-5xl">Knit</h1>
         <p className="mt-4 text-lg leading-relaxed text-muted">
           Read the scriptures together with family and friends, share what you're learning, and find scriptures on
           any topic with a study assistant.

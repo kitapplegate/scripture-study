@@ -1,4 +1,4 @@
-# Scripture Study
+# Knit
 
 A Gospel-Library-style scripture reader for family and friends, with sharing,
 study plans, and accountability planned as later slices. `SPEC.md` is the plan and

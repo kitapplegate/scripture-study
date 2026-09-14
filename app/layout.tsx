@@ -6,7 +6,7 @@ import { getSession } from "@/lib/session";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "Scripture Study", template: "%s · Scripture Study" },
+  title: { default: "Knit", template: "%s · Knit" },
   description: "Read and study the scriptures together with family and friends.",
 };
 
@@ -46,7 +46,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <header className="sticky top-0 z-10 border-b border-line bg-bg/90 backdrop-blur print:hidden">
           <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 pt-3">
             <Link href="/" className="whitespace-nowrap font-serif text-base font-semibold text-fg sm:text-lg">
-              Scripture Study
+              Knit
             </Link>
             {user ? (
               <div className="flex items-center gap-3 text-sm">

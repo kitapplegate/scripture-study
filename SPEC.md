@@ -1,4 +1,4 @@
-# Scripture Study — SPEC
+# Knit — SPEC
 
 The standing authority for this project. Change it on purpose, with a dated entry
 under **Status updates**. Don't override it quietly in a single change.
@@ -467,3 +467,15 @@ anyway.
   with all six reading links, signed-out home shows none. **Gap:** the card vanishes
   on 2026-12-28 unless the 2027 weeks are added. The weekly discussion thread (the
   other half of slice 12) isn't built.
+- **2026-09-13** — **Renamed to Knit** (Kit), after Mosiah 18:21, "having their hearts
+  knit together in unity and in love". A web search found other apps named Knit (an
+  events/socials app, a seniors-and-family social network, a messenger, a knitting
+  counter) but none for scripture or faith. Acceptable for a private invite-only app;
+  revisit before any public listing. The package name and the `scripture-study:`
+  localStorage key are unchanged on purpose; the subdomain decision (D5) stands.
+- **2026-09-13** — **DNS record created** (Kit, Cloudflare): `scriptures.marzipan-solutions.com`
+  A → the VPS, DNS only (not proxied); 1.1.1.1 and 8.8.8.8 both resolve it. (The IP
+  stays out of this public repo.)
+  Deploy is no longer blocked on DNS. Because it isn't proxied, Caddy can get its own
+  certificate directly, and the client IP for rate limiting comes from Caddy, not
+  `CF-Connecting-IP`.
