@@ -609,3 +609,11 @@ anyway.
   and applied without appearing on any command line or in any output. The app's
   connection, sign-in, and the nightly backup (peer auth) were checked afterward.
   BOOTSTRAP §3 now uses `sudo -u postgres psql -d knit` for DB checks.
+- **2026-09-14** — **Editing posts (Kit: "if we find typos").** Authors get an Edit link on
+  their own posts → `/posts/[id]/edit`, the same composer pre-filled, where text, scripture,
+  and link can all change. Edits are marked "· edited" (the existing `edited_at` column).
+  **Author only:** `updatePost` checks `author_id` in the SQL, so another member or a forged
+  id can't change a post. Admins can still delete but not rewrite someone's words, and
+  anyone else gets a 404 on the edit page. An edit follows the same rules as a new post
+  (text or a scripture; the DB check still applies). No migration. Comment editing isn't
+  built. VERIFICATION row 25. Not yet deployed.

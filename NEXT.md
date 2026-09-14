@@ -6,6 +6,8 @@
 
 **Why now:** Every launch check passed on 2026-09-14 (VERIFICATION rows 7, 15, 19, 20, 21). The family is waiting.
 
+**Deploy pending (needs Kit's OK):** post editing (VERIFICATION row 25). No migration: push, then `deploy.sh`. Then Kit fixes a typo in one of his own live posts.
+
 **Security, done 2026-09-14: the knit database password was rotated** after verification commands logged it via `sudo -u knit psql "$DATABASE_URL"` (and it was printed into the Claude session). The new one was generated on the VPS and never printed. Postgres `log_statement` is `none`, so the `ALTER ROLE` wasn't logged. It went in through stdin, and `.env` was rewritten via an environment variable (still knit:knit 600). Checks: knit restarted, `/sign-in` 200, the app's `.env` credentials connect as `knit`, a sign-in attempt through the app got 401 (reached the DB), and no journal lines since contain a knit DB URL. Kit doesn't need the password: it lives in `/opt/knit/app-src/.env`, and hands-on DB access is `sudo -u postgres psql -d knit` (no password). If it's ever lost, rotate again the same way.
 
 **Deployed 2026-09-14:** free-form family posts (`c9c174c`, VERIFICATION row 24; migration 007 applied on the VPS). Still to confirm: Kit posts a text-only update on the live feed.

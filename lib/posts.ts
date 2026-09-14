@@ -82,6 +82,18 @@ export async function createPost(input: NewPost & { authorId: string }) {
   return rows[0].id;
 }
 
+// Only the author can edit, never an admin rewriting someone else's words, and a forged id
+// changes nothing. The database still refuses an edit that empties the post. Returns true
+// only if a post was actually updated.
+export async function updatePost(actor: Actor, postId: string, input: NewPost) {
+  const { rowCount } = await pool.query(
+    `UPDATE posts SET body = $3, verse_id = $4, end_verse_id = $5, link_url = $6, edited_at = now()
+     WHERE id = $1::bigint AND author_id = $2::text`,
+    [postId, actor.id, input.body, input.verseId, input.endVerseId ?? null, input.linkUrl],
+  );
+  return rowCount === 1;
+}
+
 // Returns true only if a post was actually deleted.
 export async function deletePost(actor: Actor, postId: string) {
   const { rowCount } = await pool.query(

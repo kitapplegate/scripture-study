@@ -36,6 +36,26 @@ export async function createPostAction(_prev: FormState, formData: FormData): Pr
   redirect(returnTo === "/feed" ? "/feed" : "/");
 }
 
+const updateSchema = createSchema.extend({ postId: dbId });
+
+export async function updatePostAction(_prev: FormState, formData: FormData): Promise<FormState> {
+  const user = await requireUser();
+  const parsed = updateSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return { error: "Check the form and try again." };
+  const { postId, body = "", reference = "", linkUrl = "" } = parsed.data;
+
+  const prepared = await preparePost({ body, reference, linkUrl });
+  if (!prepared.ok) return { error: prepared.error, values: { body, reference, linkUrl } };
+
+  if (!(await posts.updatePost(user, postId, prepared.post))) {
+    return { error: "Only the person who wrote this post can edit it.", values: { body, reference, linkUrl } };
+  }
+  revalidatePath("/feed");
+  revalidatePath("/");
+  revalidatePath(`/posts/${postId}`);
+  redirect(`/posts/${postId}`);
+}
+
 export async function deletePostAction(formData: FormData) {
   const user = await requireUser();
   const postId = dbId.parse(formData.get("postId"));

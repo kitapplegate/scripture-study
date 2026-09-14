@@ -16,16 +16,20 @@ export function PostCard({
   linkToPost?: boolean;
   returnTo?: "/" | "/feed";
 }) {
-  const canDelete = post.author_id === viewer.id || viewer.role === "admin";
+  const canEdit = post.author_id === viewer.id; // author only (lib/posts.ts updatePost)
+  const canDelete = canEdit || viewer.role === "admin";
   const comments = post.comment_count === 1 ? "1 comment" : `${post.comment_count} comments`;
 
   return (
     <article className="rounded-xl border border-line bg-card p-4">
       <header className="mb-3 flex items-baseline justify-between gap-2 text-sm">
         <span className="font-semibold">{post.author_name}</span>
-        <time dateTime={post.created_at.toISOString()} className="text-muted">
-          {timeAgo(post.created_at)}
-        </time>
+        <span className="text-muted">
+          <time dateTime={post.created_at.toISOString()}>{timeAgo(post.created_at)}</time>
+          {post.edited_at && (
+            <span title={`Edited ${post.edited_at.toLocaleString()}`}> · edited</span>
+          )}
+        </span>
       </header>
 
       {post.verse_id && <VerseCard verseId={post.verse_id} endVerseId={post.end_verse_id} />}
@@ -65,6 +69,11 @@ export function PostCard({
           {linkToPost && (
             <Link href={`/posts/${post.id}`} className="text-muted hover:text-accent">
               {comments}
+            </Link>
+          )}
+          {canEdit && (
+            <Link href={`/posts/${post.id}/edit`} className="text-muted hover:text-accent">
+              Edit
             </Link>
           )}
           {canDelete && (
