@@ -581,4 +581,5 @@ anyway.
   tab's `sessionStorage`, per member, capped at 30 messages (`lib/assistant-history.ts`).
   So Back, a reload, or going from the home panel to the full page keeps it, and "Start
   over" clears it. Principle 4 holds: it stays in that browser tab, is never sent
-  anywhere, and is gone when the tab closes. VERIFICATION row 23. Not yet deployed.
+  anywhere, and is gone when the tab closes. VERIFICATION row 23. Deployed the same day
+  (`5ca7624`, via `deploy.sh`).
