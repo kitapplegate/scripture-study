@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, unstable_rethrow } from "next/navigation";
 import { ChapterReader, type ReaderVerse } from "@/components/ChapterReader";
 import { adjacentChapters, crossRefLink, getChapter, getIndex } from "@/lib/scriptures";
+import { getSession } from "@/lib/session";
 
 type Props = { params: Promise<{ volume: string; book: string; chapter: string }> };
 
@@ -18,6 +19,12 @@ export default async function ChapterPage({ params }: Props) {
   const index = await getIndex();
   const { prev, next } = adjacentChapters(index, chapter.volume, chapter.book, chapter.chapter);
   const single = index.volumes.find((v) => v.slug === chapter.volume)?.books.length === 1;
+  // The reader is public; "Add to talk" only shows for members. If the session lookup
+  // fails, the chapter still renders without it.
+  const session = await getSession().catch((err: Error) => {
+    unstable_rethrow(err);
+    return null;
+  });
 
   const verses: ReaderVerse[] = chapter.verses.map(({ xrefs, ...v }) => ({
     ...v,
@@ -52,7 +59,7 @@ export default async function ChapterPage({ params }: Props) {
         <p className="mt-4 font-serif italic leading-relaxed text-muted">{chapter.heading ?? chapter.note}</p>
       )}
 
-      <ChapterReader reference={chapter.reference} verses={verses} />
+      <ChapterReader reference={chapter.reference} verses={verses} signedIn={Boolean(session)} />
 
       {chapter.signature && <p className="mt-6 text-right font-serif italic">{chapter.signature}</p>}
       {chapter.bookNote && <p className="mt-6 font-serif italic text-muted">{chapter.bookNote}</p>}

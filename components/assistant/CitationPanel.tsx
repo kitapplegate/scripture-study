@@ -1,12 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { AddToTalkButton } from "@/components/talk-builder/AddToTalkButton";
 import type { CitationMap } from "./useCitations";
 
+// The verified scriptures from an assistant answer, each with "Add to talk". Only
+// members can use the assistant, so the button always shows here.
 export function CitationPanel({ citations }: { citations?: CitationMap }) {
   if (!citations || citations.size === 0) return null;
   const all = [...citations.values()];
-  const found = all.filter((c) => c.found);
+  const found = all.flatMap((c) => (c.found ? [c] : []));
   const missing = all.length - found.length;
 
   return (
@@ -15,21 +18,22 @@ export function CitationPanel({ citations }: { citations?: CitationMap }) {
         Scriptures cited ({found.length})
       </summary>
       <ul className="mt-2 space-y-3">
-        {found.map((c) =>
-          c.found ? (
-            <li key={c.ref}>
-              <Link href={c.href} className="font-medium text-accent hover:underline">{c.reference}</Link>
-              <p className="mt-1 font-serif leading-relaxed">
-                {c.verses.map((v) => (
-                  <span key={v.verse}>
-                    {c.verses.length > 1 && <sup className="mr-0.5 font-sans text-[0.65rem] text-accent">{v.verse}</sup>}
-                    {v.text}{" "}
-                  </span>
-                ))}
-              </p>
-            </li>
-          ) : null,
-        )}
+        {found.map((c) => (
+          <li key={c.ref}>
+            <div className="flex items-start justify-between gap-3">
+              <Link href={c.href} className="pt-1 font-medium text-accent hover:underline">{c.reference}</Link>
+              <AddToTalkButton verseId={c.id} endVerseId={c.endId ?? null} reference={c.reference} align="right" />
+            </div>
+            <p className="mt-1 font-serif leading-relaxed">
+              {c.verses.map((v) => (
+                <span key={v.verse}>
+                  {c.verses.length > 1 && <sup className="mr-0.5 font-sans text-[0.65rem] text-accent">{v.verse}</sup>}
+                  {v.text}{" "}
+                </span>
+              ))}
+            </p>
+          </li>
+        ))}
       </ul>
       {missing > 0 && (
         <p className="mt-3 text-xs text-muted">

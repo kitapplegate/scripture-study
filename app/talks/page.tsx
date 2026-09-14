@@ -14,10 +14,10 @@ export default async function TalksPage() {
   return (
     <>
       <h1 className="mb-1 font-serif text-3xl font-semibold">My talks and lessons</h1>
-      <p className="mb-6 text-sm text-muted">Private drafts. Only you can see them.</p>
+      <p className="mb-6 text-sm text-muted">Build talks and lessons from scriptures, thoughts, and headings. Only you can see them.</p>
       <div className="mb-6 flex flex-wrap gap-2">
         <form action={createBlankTalkAction}>
-          <button type="submit" className="rounded-lg bg-accent px-4 py-2 font-medium text-bg">New blank draft</button>
+          <button type="submit" className="rounded-lg bg-accent px-4 py-2 font-medium text-bg">New talk</button>
         </form>
       </div>
       {talks.length === 0 ? (

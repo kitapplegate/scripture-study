@@ -2,13 +2,21 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { AddToTalkButton } from "@/components/talk-builder/AddToTalkButton";
 import type { RefLink, Verse } from "@/lib/scriptures";
 
 export type ReaderVerse = Omit<Verse, "xrefs"> & { xrefs?: RefLink[] };
 
-// Tap a verse to open its panel. For now the panel holds cross-references and
-// "copy"; later it's where highlighting, notes, and sharing go.
-export function ChapterReader({ reference, verses }: { reference: string; verses: ReaderVerse[] }) {
+// Tap a verse to open its panel: cross-references, Share, Add to talk (signed in), Copy.
+export function ChapterReader({
+  reference,
+  verses,
+  signedIn = false,
+}: {
+  reference: string;
+  verses: ReaderVerse[];
+  signedIn?: boolean;
+}) {
   const [openId, setOpenId] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
@@ -73,6 +81,7 @@ export function ChapterReader({ reference, verses }: { reference: string; verses
                   >
                     Share
                   </Link>
+                  {signedIn && <AddToTalkButton verseId={v.id} reference={`${reference}:${v.verse}`} />}
                   <button
                     type="button"
                     onClick={() => copy(v)}

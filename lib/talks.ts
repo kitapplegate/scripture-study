@@ -54,3 +54,15 @@ export async function deleteTalk(ownerId: string, id: string) {
   const { rowCount } = await pool.query(`DELETE FROM talks WHERE id = $1::bigint AND owner_id = $2`, [id, ownerId]);
   return rowCount === 1;
 }
+
+export type TalkDetails = Omit<TalkFields, "body">;
+
+// Title, type, length, audience. Capsules live in talk_items (lib/talk-items.ts).
+export async function updateTalkDetails(ownerId: string, id: string, d: TalkDetails) {
+  const { rowCount } = await pool.query(
+    `UPDATE talks SET title = $3, kind = $4, minutes = $5, audience = $6, updated_at = now()
+     WHERE id = $1::bigint AND owner_id = $2`,
+    [id, ownerId, d.title, d.kind, d.minutes, d.audience],
+  );
+  return rowCount === 1;
+}

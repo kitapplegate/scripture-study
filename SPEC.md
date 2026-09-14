@@ -407,3 +407,53 @@ anyway.
   Open at T1: what to do with existing markdown drafts (convert each to a single
   thought capsule, or start fresh).
 
+- **2026-09-13** — Committed `885905e` and pushed. **Talk builder slice T1 built:**
+  - **Data:** `talk_items` (migration 005). There were no existing drafts, so no
+    conversion; `talks.body` is unused but not dropped.
+  - **Server:** `lib/talk-items.ts` does add/update/delete/reorder with owner checks in
+    SQL. A reorder must list exactly the talk's capsules or nothing changes.
+  - **Builder UI** (`components/talk-builder/TalkBuilder.tsx`):
+    - dnd-kit sortable list; the ⠿ handle drags with a mouse (5px), touch (150ms
+      press), or keyboard
+    - autosave (700ms debounce) with a Saving/All-saved/Not-saved indicator; a
+      beforeunload warning; pending edits flushed when navigating away
+    - two-step Remove
+    - add bar for scripture by reference, thought, section heading, and https link
+  - The old markdown `TalkEditor` was removed. The print view is unlinked until T3.
+
+  **Verified:**
+  - typecheck
+  - **100/100 tests** (7 new: order, validation, exact-set reorder, cross-member and
+    cross-talk isolation, cascade delete)
+  - HTTP checks as a throwaway member: the builder renders all four capsule kinds in
+    order with full verse text and handle labels, My talks lists the talk, another
+    member's talk returns 404
+  - production build passes
+
+  **Not yet verified:** dragging in a real browser. Kit's Chrome session is signed
+  in as Kit, and the browser rules don't allow typing a password to switch accounts,
+  so a live drag test needs Kit, or his OK to create and delete a test talk in his
+  account.
+- **2026-09-13** — **Talk builder slice T2 built (Add to talk):**
+  - **`AddToTalkButton`:** a menu of your talks (last used first, remembered in
+    localStorage) plus "+ New talk". It appears in the reader's verse panel, on each
+    Search result, and on each verified scripture in the assistant's "Scriptures cited"
+    list. Members only; signed-out visitors don't see it.
+  - **`addScriptureToTalkAction`:** checks the verse exists before creating any new
+    talk, checks the talk is the caller's, and appends a scripture capsule.
+  - Citation results now carry verse ids (`id`/`endId`).
+
+  **Verified:**
+  - typecheck; 100/100 tests
+  - Search as a member shows 50 buttons; signed out shows 0
+  - `/api/passages` returns `id=moro.10.4 endId=moro.10.5` for Moroni 10:4-5
+  - production build compiles, and a production server serves chapter pages with 200
+
+  **Issue found:** on the local **dev** server every chapter page returned 500 ("Jest
+  worker encountered 2 child process exceptions"), while the production build served
+  them fine. The PC had 1.3 GB of 15.3 GB free (the dev server alone used ~800 MB), so
+  Next's dev workers were crashing under memory pressure. Fix: restart the dev server
+  after freeing memory.
+
+  **Not yet verified:** adding a scripture through the button in a real browser
+  (needs Kit), and dragging in the builder.

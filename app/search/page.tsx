@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { unstable_rethrow } from "next/navigation";
 import { Highlighted } from "@/components/Highlighted";
+import { AddToTalkButton } from "@/components/talk-builder/AddToTalkButton";
 import { isVolumeSlug, searchScriptures, VOLUME_FILTERS } from "@/lib/search";
+import { getSession } from "@/lib/session";
 
 export const metadata: Metadata = { title: "Search" };
 
@@ -10,7 +13,14 @@ type Props = { searchParams: Promise<{ q?: string; vol?: string }> };
 export default async function SearchPage({ searchParams }: Props) {
   const { q = "", vol } = await searchParams;
   const volume = isVolumeSlug(vol) ? vol : undefined;
-  const hits = q.trim() ? await searchScriptures(q, { volume, limit: 50 }) : null;
+  const [hits, session] = await Promise.all([
+    q.trim() ? searchScriptures(q, { volume, limit: 50 }) : Promise.resolve(null),
+    // Search is public; "Add to talk" only shows for members.
+    getSession().catch((err: Error) => {
+      unstable_rethrow(err);
+      return null;
+    }),
+  ]);
   const someOnly = hits?.some((h) => h.matched === "some");
 
   return (
@@ -49,7 +59,10 @@ export default async function SearchPage({ searchParams }: Props) {
           <ol className="space-y-3">
             {hits.map((h) => (
               <li key={h.id} className="rounded-xl border border-line bg-card p-4">
-                <Link href={h.href} className="text-sm font-medium text-accent hover:underline">{h.reference}</Link>
+                <div className="flex items-start justify-between gap-3">
+                  <Link href={h.href} className="pt-1 text-sm font-medium text-accent hover:underline">{h.reference}</Link>
+                  {session && <AddToTalkButton verseId={h.id} reference={h.reference} align="right" />}
+                </div>
                 <p className="mt-1 font-serif leading-relaxed">
                   <Highlighted text={h.highlighted} />
                 </p>
