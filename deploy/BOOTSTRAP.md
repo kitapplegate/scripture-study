@@ -1,9 +1,13 @@
 # Knit VPS bootstrap: one time only
 
-> **Status: not started.** Written 2026-09-14 from fantasy-football's
-> `deploy/BOOTSTRAP.md`, which set the conventions on this VPS: `/opt/<app>`, a
-> system user per app, Postgres 16 bound to localhost, Caddy in front, a nightly
-> cron `pg_dump`. Nothing here has run yet; update this banner as steps complete.
+> **Status: steps 0–6 done 2026-09-14; Knit is live at
+> `https://knit.marzipan-solutions.com`.** Still to do: §7 first admin, §8 nightly
+> backup, §9 launch checks. Written from fantasy-football's `deploy/BOOTSTRAP.md`, which
+> set the conventions on this VPS: `/opt/<app>`, a system user per app, Postgres 16 bound
+> to localhost, Caddy in front, a nightly cron `pg_dump`. Deviations on the first run:
+> `unzip` had to be installed (§0), and the AI keys were piped from Kit's local
+> `.env.local` instead of pasted (§3). The Caddyfile backup from §6 is
+> `/etc/caddy/Caddyfile.bak-knit-20260914-122306`.
 
 Run as root on the VPS. Each step says how to confirm it before moving on.
 

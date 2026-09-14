@@ -555,3 +555,14 @@ anyway.
   headless Chrome at 390px (VERIFICATION row 22). **Deferred** audit items: remaining
   small text links, reading column width, focus rings, 12px guidance text, and h2
   styling.
+- **2026-09-14** — **Slice 2: deployed. Knit is live at
+  `https://knit.marzipan-solutions.com`.** Pushed `885905e..f1d1616` after a secret scan
+  (no keys, secrets, or family names; the VPS IP in `42558e2`'s session log went public
+  as Kit decided 2026-09-13, and it's already in public DNS). BOOTSTRAP §0–6 run on the
+  VPS: the `knit` user, database, and `.env` (server-generated secrets; AI keys piped from
+  Kit's machine unprinted, the same keys as local dev per Kit), migrations and 41,995
+  verses, the build, `knit.service` on 127.0.0.1:3102, and the Caddy block (validated
+  before reload). One surprise: the VPS lacked `unzip`, which `build-scriptures.mjs`
+  needs; installed and added to the preflight. The rate limit was verified through the
+  real Caddy (row 19). Neighboring sites were unaffected. **Remaining for launch:** first
+  admin invite, nightly backup, Kit's phone check, and an invite/reset/assistant check.
