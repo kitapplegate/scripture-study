@@ -502,3 +502,11 @@ anyway.
   The builder's "Print view" link is back. The talk builder Kit asked for is complete.
   Curl as a throwaway member confirmed the order and verse text; another member's
   talk returns 404. **Not yet verified:** the browser print preview.
+- **2026-09-14** — **Pre-ship: sign-in rate limit per member behind Caddy.** better-auth
+  1.7.4 ignores any multi-address `X-Forwarded-For` unless `trustedProxies` is set. It
+  put all those requests in one shared bucket, so a few wrong passwords could have
+  locked out the whole family. `lib/auth.ts` now trusts only the loopback hops, which
+  means the address Caddy saw is used and a forged leftmost address is ignored. This is
+  safe only because the app binds to localhost (see Security). Proven by
+  `tests/rate-limit-ip.test.ts` (fails without the setting) and a live curl on dev;
+  still to confirm through Caddy at deploy.
