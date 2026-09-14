@@ -21,8 +21,9 @@ export default async function TalkPage({ params }: Props) {
 
   return (
     <>
-      <nav className="mb-4 text-sm">
+      <nav className="mb-4 flex justify-between text-sm">
         <Link href="/talks" className="text-muted hover:text-accent">← My talks</Link>
+        <Link href={`/talks/${talk.id}/print`} className="text-muted hover:text-accent">Print view</Link>
       </nav>
       <TalkBuilder
         talkId={talk.id}

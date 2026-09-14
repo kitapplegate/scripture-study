@@ -494,3 +494,10 @@ anyway.
   with one login. Recipes wait until Knit is live. **Subdomain changed** to
   `knit.marzipan-solutions.com` (D5). Checked first: no code, env, or Caddy config
   referenced the old name, only docs.
+- **2026-09-14** — **Talk builder T3: print view from capsules.** `/talks/[id]/print`
+  now renders the talk's capsules in the arranged order: headings, thoughts, links
+  with the URL written out for paper, and scriptures with full verse text from our
+  data plus the member's note. It no longer reads the retired markdown `talks.body`.
+  The builder's "Print view" link is back. The talk builder Kit asked for is complete.
+  Curl as a throwaway member confirmed the order and verse text; another member's
+  talk returns 404. **Not yet verified:** the browser print preview.
