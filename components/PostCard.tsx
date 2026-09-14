@@ -53,7 +53,7 @@ export function PostCard({
                 type="submit"
                 aria-pressed={mine}
                 aria-label={`${REACTIONS[kind].label}${count ? ` (${count})` : ""}`}
-                className={`rounded-full border px-2.5 py-1 ${mine ? "border-accent bg-hl" : "border-line hover:border-accent"}`}
+                className={`inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border px-2.5 py-1 ${mine ? "border-accent bg-hl" : "border-control hover:border-accent"}`}
               >
                 {REACTIONS[kind].emoji}
                 {count > 0 && <span className="ml-1">{count}</span>}

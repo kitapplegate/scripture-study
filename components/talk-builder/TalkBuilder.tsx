@@ -222,7 +222,7 @@ export function TalkBuilder({
             <select
               value={details.kind}
               onChange={(e) => editDetails({ kind: e.target.value as TalkDetailsDraft["kind"] })}
-              className="rounded-lg border border-line bg-card px-2 py-1"
+              className="rounded-lg border border-control bg-card px-2 py-1"
             >
               <option value="talk">Talk</option>
               <option value="lesson">Lesson</option>
@@ -238,7 +238,7 @@ export function TalkBuilder({
               onChange={(e) =>
                 editDetails({ minutes: e.target.value === "" ? null : Math.min(120, Math.max(1, Math.round(Number(e.target.value)))) })
               }
-              className="w-20 rounded-lg border border-line bg-card px-2 py-1"
+              className="w-20 rounded-lg border border-control bg-card px-2 py-1"
             />
           </label>
           <label className="flex min-w-48 flex-1 items-center gap-2">
@@ -248,7 +248,7 @@ export function TalkBuilder({
               onChange={(e) => editDetails({ audience: e.target.value })}
               maxLength={200}
               placeholder="Sacrament meeting, youth…"
-              className="min-w-0 flex-1 rounded-lg border border-line bg-card px-2 py-1"
+              className="min-w-0 flex-1 rounded-lg border border-control bg-card px-2 py-1"
             />
           </label>
         </div>
@@ -265,7 +265,7 @@ export function TalkBuilder({
       {error && (
         <div
           role="alert"
-          className="mb-3 flex items-start justify-between gap-3 rounded-lg border border-red-300 p-3 text-sm text-red-700 dark:border-red-800 dark:text-red-400"
+          className="mb-3 flex items-start justify-between gap-3 rounded-lg border border-error p-3 text-sm text-error"
         >
           <span>{error}</span>
           <button type="button" onClick={() => setError(null)} className="text-xs underline">
@@ -315,7 +315,7 @@ export function TalkBuilder({
 function SaveIndicator({ state }: { state: SaveState }) {
   const text = { idle: "", saving: "Saving…", saved: "All changes saved", error: "Not saved" }[state];
   return (
-    <span aria-live="polite" className={state === "error" ? "text-red-700 dark:text-red-400" : ""}>
+    <span aria-live="polite" className={state === "error" ? "text-error" : ""}>
       {text}
     </span>
   );
@@ -349,7 +349,7 @@ function Capsule({
           {...listeners}
           aria-label={`Move ${name}`}
           title="Drag to move"
-          className="mt-0.5 cursor-grab touch-manipulation select-none rounded px-1 text-lg leading-none text-muted hover:text-accent active:cursor-grabbing"
+          className="-ml-2 -mt-2.5 flex min-h-11 min-w-11 cursor-grab touch-manipulation select-none items-center justify-center rounded text-lg leading-none text-muted hover:text-accent active:cursor-grabbing"
         >
           ⠿
         </button>
@@ -369,14 +369,14 @@ function RemoveButton({ onRemove }: { onRemove: () => void }) {
   const [armed, setArmed] = useState(false);
   if (!armed) {
     return (
-      <button type="button" onClick={() => setArmed(true)} className="text-xs text-muted hover:text-red-600">
+      <button type="button" onClick={() => setArmed(true)} className="text-xs text-muted hover:text-error">
         Remove
       </button>
     );
   }
   return (
     <span className="flex items-center gap-3 text-xs">
-      <button type="button" onClick={onRemove} className="font-medium text-red-700 dark:text-red-400">
+      <button type="button" onClick={onRemove} className="font-medium text-error">
         Yes, remove
       </button>
       <button type="button" onClick={() => setArmed(false)} className="text-muted hover:text-accent">
@@ -479,7 +479,7 @@ function CapsuleBody({ item, autoFocus, onEdit }: { item: TalkItem; autoFocus: b
               Open link ↗
             </a>
           ) : (
-            <p className="px-1 text-xs text-red-700 dark:text-red-400">Enter a full address starting with https://</p>
+            <p className="px-1 text-xs text-error">Enter a full address starting with https://</p>
           )}
         </div>
       );
@@ -520,8 +520,8 @@ function AddBar({ onAdd }: { onAdd: (input: NewItemInput) => Promise<boolean> })
     }
   }
 
-  const button = "rounded-lg border border-line bg-card px-3 py-2 text-sm hover:border-accent disabled:opacity-50";
-  const input = "min-w-0 flex-1 rounded-lg border border-line bg-card px-3 py-2 outline-none focus:border-accent";
+  const button = "min-h-11 rounded-lg border border-control bg-card px-3 py-2 text-sm hover:border-accent disabled:opacity-50";
+  const input = "min-w-0 flex-1 rounded-lg border border-control bg-card px-3 py-2 outline-none focus:border-accent";
 
   return (
     <div className="sticky bottom-0 z-20 mt-6 border-t border-line bg-bg py-3">
@@ -537,7 +537,7 @@ function AddBar({ onAdd }: { onAdd: (input: NewItemInput) => Promise<boolean> })
             placeholder="Alma 32:21 or Moroni 10:4-5"
             className={input}
           />
-          <button type="submit" disabled={busy || !reference.trim()} className="rounded-lg bg-accent px-4 py-2 font-medium text-bg disabled:opacity-50">
+          <button type="submit" disabled={busy || !reference.trim()} className="min-h-11 rounded-lg bg-accent px-4 py-2 font-medium text-bg disabled:opacity-50">
             Add
           </button>
         </form>
@@ -564,7 +564,7 @@ function AddBar({ onAdd }: { onAdd: (input: NewItemInput) => Promise<boolean> })
             placeholder="Label (optional)"
             className={`${input} basis-40`}
           />
-          <button type="submit" disabled={busy || !isHttps(url.trim())} className="rounded-lg bg-accent px-4 py-2 font-medium text-bg disabled:opacity-50">
+          <button type="submit" disabled={busy || !isHttps(url.trim())} className="min-h-11 rounded-lg bg-accent px-4 py-2 font-medium text-bg disabled:opacity-50">
             Add
           </button>
         </form>

@@ -100,7 +100,7 @@ export function AddToTalkButton({
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={toggle}
-        className="rounded-md border border-line px-2 py-1 text-sm hover:border-accent hover:text-accent"
+        className="inline-flex min-h-11 items-center rounded-md border border-control px-3 py-1 text-sm hover:border-accent hover:text-accent"
       >
         Add to talk
       </button>
@@ -131,7 +131,7 @@ export function AddToTalkButton({
                         role="menuitem"
                         disabled={busy}
                         onClick={() => add(t.id)}
-                        className="w-full truncate rounded px-2 py-1.5 text-left hover:bg-hl disabled:opacity-50"
+                        className="min-h-11 w-full truncate rounded px-2 py-1.5 text-left hover:bg-hl disabled:opacity-50"
                       >
                         {t.title}
                       </button>
@@ -144,13 +144,13 @@ export function AddToTalkButton({
                 role="menuitem"
                 disabled={busy}
                 onClick={() => add(null)}
-                className="mt-1 w-full rounded px-2 py-1.5 text-left text-accent hover:bg-hl disabled:opacity-50"
+                className="mt-1 min-h-11 w-full rounded px-2 py-1.5 text-left text-accent hover:bg-hl disabled:opacity-50"
               >
                 + New talk
               </button>
               {busy && <p className="mt-1 px-1 text-xs text-muted">Adding…</p>}
               {status.kind === "error" && (
-                <p role="alert" className="mt-1 px-1 text-xs text-red-700 dark:text-red-400">
+                <p role="alert" className="mt-1 px-1 text-xs text-error">
                   {status.message}
                 </p>
               )}

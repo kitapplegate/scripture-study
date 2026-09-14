@@ -10,14 +10,14 @@ export function ConfirmSubmit({ label = "Delete", confirmLabel = "Yes, delete", 
 
   if (!armed) {
     return (
-      <button type="button" onClick={() => setArmed(true)} className={`${size} text-muted hover:text-red-600`}>
+      <button type="button" onClick={() => setArmed(true)} className={`${size} text-muted hover:text-error`}>
         {label}
       </button>
     );
   }
   return (
     <span className={`inline-flex items-center gap-3 ${size}`}>
-      <button type="submit" className="font-medium text-red-700 dark:text-red-400">
+      <button type="submit" className="font-medium text-error">
         {confirmLabel}
       </button>
       <button type="button" onClick={() => setArmed(false)} className="text-muted hover:text-accent">

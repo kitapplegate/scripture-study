@@ -39,11 +39,11 @@ export function SignInForm() {
     <form method="post" onSubmit={onSubmit} className="space-y-4">
       <Field label="Email" name="email" type="email" autoComplete="email" />
       <Field label="Password" name="password" type="password" autoComplete="current-password" />
-      {error && <p role="alert" className="text-sm text-red-700 dark:text-red-400">{error}</p>}
+      {error && <p role="alert" className="text-sm text-error">{error}</p>}
       <button
         type="submit"
         disabled={pending}
-        className="w-full rounded-lg bg-accent px-4 py-2 font-medium text-bg disabled:opacity-60"
+        className="w-full min-h-11 rounded-lg bg-accent px-4 py-2 font-medium text-bg disabled:opacity-60"
       >
         {pending ? "Signing in…" : "Sign in"}
       </button>
@@ -61,7 +61,7 @@ export function Field(props: { label: string; name: string; type?: string; autoC
         autoComplete={props.autoComplete}
         minLength={props.minLength}
         required
-        className="w-full rounded-lg border border-line bg-card px-3 py-2 outline-none focus:border-accent"
+        className="w-full rounded-lg border border-control bg-card px-3 py-2 outline-none focus:border-accent"
       />
     </label>
   );

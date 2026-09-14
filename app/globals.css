@@ -1,25 +1,57 @@
 @import "tailwindcss";
 
+/* Contrast (WCAG): text tokens are at least 4.5:1 on bg, card, and hl; --control and
+   --error are at least 3:1 on bg and card, the minimum for field and button edges. */
 :root {
+  color-scheme: light;
   --bg: #fbf8f3;
   --card: #ffffff;
   --fg: #2a2520;
-  --muted: #7a6f63;
-  --line: #e7dfd3;
+  --muted: #70655a;
+  --line: #e7dfd3; /* dividers and the edges of cards you can't click */
+  --control: #978c80; /* the edges of fields, buttons, and clickable cards */
   --accent: #8a5a2b;
   --hl: #f3e6c8;
+  --error: #b91c1c;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
+    color-scheme: dark;
     --bg: #17140f;
     --card: #1f1b15;
     --fg: #e9e1d4;
     --muted: #a39684;
     --line: #332c23;
+    --control: #766c5f;
     --accent: #d9a066;
     --hl: #3a2f1f;
+    --error: #f87171;
   }
+}
+
+/* Printing always uses dark text on white, whatever the device's theme. */
+@media print {
+  :root {
+    color-scheme: light;
+    --bg: #ffffff;
+    --card: #ffffff;
+    --fg: #111111;
+    --muted: #444444;
+    --line: #aaaaaa;
+    --control: #aaaaaa;
+    --accent: #000000;
+    --hl: #ffffff;
+    --error: #000000;
+  }
+  main {
+    max-width: none;
+    padding: 0;
+  }
+}
+
+@page {
+  margin: 0.65in;
 }
 
 @theme inline {
@@ -28,9 +60,25 @@
   --color-fg: var(--fg);
   --color-muted: var(--muted);
   --color-line: var(--line);
+  --color-control: var(--control);
   --color-accent: var(--accent);
   --color-hl: var(--hl);
+  --color-error: var(--error);
   --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Noto Serif", serif;
+}
+
+@layer base {
+  /* Tailwind's default placeholder is half the text color, about 3:1. Too faint. */
+  ::placeholder {
+    color: var(--muted);
+    opacity: 1;
+  }
+  /* 44px touch targets for form fields. Buttons and links get min-h-11 where they're used,
+     since a global rule would also stretch inline buttons like verse numbers. */
+  input:not([type="hidden"], [type="checkbox"], [type="radio"]),
+  select {
+    min-height: 2.75rem;
+  }
 }
 
 body {

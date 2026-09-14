@@ -33,7 +33,7 @@ export function ChapterReader({
       {verses.map((v) => {
         const open = openId === v.id;
         return (
-          <li key={v.id} id={`v${v.verse}`} className="verse scroll-mt-20 rounded-lg">
+          <li key={v.id} id={`v${v.verse}`} className="verse scroll-mt-24 rounded-lg">
             {v.heading && <h2 className="mt-6 text-center text-lg font-semibold">{v.heading}</h2>}
             {v.subheading && <p className="mb-2 text-center text-base italic text-muted">{v.subheading}</p>}
             <p
@@ -66,7 +66,7 @@ export function ChapterReader({
                     <ul className="mb-3 flex flex-wrap gap-2">
                       {v.xrefs.map((x) => (
                         <li key={x.href + x.label}>
-                          <Link href={x.href} className="rounded-md border border-line px-2 py-1 hover:border-accent hover:text-accent">
+                          <Link href={x.href} className="inline-flex min-h-11 items-center rounded-md border border-control px-3 py-1 hover:border-accent hover:text-accent">
                             {x.label}
                           </Link>
                         </li>
@@ -77,7 +77,7 @@ export function ChapterReader({
                 <div className="flex flex-wrap gap-2">
                   <Link
                     href={`/share?v=${v.id}`}
-                    className="rounded-md border border-accent px-2 py-1 text-accent hover:bg-hl"
+                    className="inline-flex min-h-11 items-center rounded-md border border-accent px-3 py-1 text-accent hover:bg-hl"
                   >
                     Share
                   </Link>
@@ -85,7 +85,7 @@ export function ChapterReader({
                   <button
                     type="button"
                     onClick={() => copy(v)}
-                    className="rounded-md border border-line px-2 py-1 hover:border-accent hover:text-accent"
+                    className="inline-flex min-h-11 items-center rounded-md border border-control px-3 py-1 hover:border-accent hover:text-accent"
                   >
                     {copiedId === v.id ? "Copied" : "Copy verse"}
                   </button>

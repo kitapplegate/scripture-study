@@ -539,3 +539,19 @@ anyway.
   the dark-mode failed-tool chip is 2.65:1, and print has no forced light palette. The
   contrast numbers were re-computed independently and match. Which ones to fix before
   launch is Kit's call.
+- **2026-09-14** — **Layout and color fixes before launch** (Kit chose fix-first).
+  New `--control` token for the edges of fields, buttons, and clickable cards (≥3:1),
+  with `--line` kept for dividers. Light `--muted` darkened to `#70655a` so it passes on
+  highlighted verses. `--error` replaces the scattered red utilities. Placeholders use
+  `--muted`. Form fields are 44px (a base rule), and buttons, nav links, reactions,
+  reader chips, and builder buttons get `min-h-11` where they're used, not globally,
+  because a global rule would stretch the inline verse-number buttons. On phones the nav
+  shows four links plus a "More" menu (`components/NavMore.tsx`). Print forces a light
+  palette. Visible labels on search and the reference picker. The `/talks` list wraps
+  long titles. `color-scheme` is set for native controls. Verse anchors use
+  `scroll-mt-24` for the taller header. **Header (Kit):** "Knit" is larger, with the
+  scripture it comes from beside it as plain text: "Mosiah 18:21" on phones, plus the
+  words "hearts knit together in unity and in love" on wider screens. Checked with
+  headless Chrome at 390px (VERIFICATION row 22). **Deferred** audit items: remaining
+  small text links, reading column width, focus rings, 12px guidance text, and h2
+  styling.

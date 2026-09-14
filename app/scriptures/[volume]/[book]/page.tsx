@@ -37,7 +37,7 @@ export default async function BookPage({ params }: Props) {
           <li key={n}>
             <Link
               href={chapterHref(volume.slug, book.slug, n)}
-              className="flex aspect-square items-center justify-center rounded-lg border border-line bg-card font-serif text-lg hover:border-accent hover:text-accent"
+              className="flex aspect-square items-center justify-center rounded-lg border border-control bg-card font-serif text-lg hover:border-accent hover:text-accent"
             >
               {n}
             </Link>

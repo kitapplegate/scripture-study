@@ -1,29 +1,27 @@
 # Next
 
-**Decision first (Kit):** fix the top findings from the Codex layout/color audit before launch, or launch now and fix after? Recommendation: fix first. The family is on phones, and form fields are nearly invisible (borders 1.25:1) with tap targets under 44px.
+**Action:** Launch. First push to GitHub: 14+ commits to a **public** repo, so first scan the unpushed diff for secrets (`git diff @{u}..HEAD`, grep for `KEY=`, `SECRET`, `password`, and IPs). Then follow `deploy/BOOTSTRAP.md` on the VPS, getting Kit's OK before each outward step (push, SSH, Caddy reload).
 
-**Action (if fixing first):** one UI slice covering the audit's top five:
-1. A `--control-line` token (light `#978c80`, dark `#766c5f`, both ≥3.1:1) on fields, buttons, and clickable cards; `--line` stays for dividers.
-2. `placeholder:text-muted` on inputs, plus visible labels on the search and reference fields.
-3. 44px minimum targets (`min-h-11`) on buttons, fields, reactions, reader chips, and header links; and a phone nav that doesn't hide links offscreen.
-4. A print block forcing a white background and dark text, with page margins.
-5. Error color tokens; `dark:text-red-400` on the failed tool chip (`components/assistant/AssistantChat.tsx:143`).
+**Why now:** Everything Kit wanted before launch is done and verified locally: the talk builder, the rate-limit IP fix, password-reset links, deploy prep, and the Codex layout/color fixes with the larger name and Mosiah 18:21. The family is waiting.
 
-**Then launch:** push (11+ commits, public repo: check for secrets first), then follow `deploy/BOOTSTRAP.md` on the VPS with Kit's OK for each outward step.
+**Start here:** `deploy/BOOTSTRAP.md` §0 preflight (read-only) on the VPS, then §1 onward.
 
-**Start here:** `app/globals.css:3-34` (tokens), `app/layout.tsx:46-66` (header and nav), `components/SignInForm.tsx:57` (`Field`). The full Codex report isn't in the repo. The SPEC 2026-09-14 "Deploy prep" entry summarizes it, and the file:line findings are re-derivable by grepping `border-line`, `outline-none`, `placeholder=`, `text-red-700`.
-
-**Verify with:** `npm run typecheck && npm test && npm run build`. A contrast script (WCAG luminance, like the one run 2026-09-14) shows every new token pair ≥3:1 for borders and ≥4.5:1 for text. Then curl a page to confirm the classes render. Kit's phone check happens at launch.
+**Verify with:** BOOTSTRAP §9 launch checks. `https://knit.marzipan-solutions.com` loads. The rate limit holds through the real Caddy (6 wrong → "Too many attempts"; another device still signs in). Kit uses the talk builder on his phone. An invite and a reset link work end to end. The assistant answers once. The first backup runs. Record the results in VERIFICATION rows 15, 19, 20, 21, 22.
 
 **Waiting on Kit:**
-- The decision above.
+- OK to push, then OK to start on the VPS.
 - The family's time zone for the Come, Follow Me week (currently `America/New_York`).
+- The assistant API keys go into the VPS `.env` (Kit pastes them with `sudoedit`, so they never go through chat).
+
+**After launch (not blocking):**
+- The rest of the Codex audit: 44px targets for text links (verse references in cards and search results, "Delete", capsule "Remove", breadcrumbs), a narrower reading column (`max-w-[68ch]`), focus rings, 12px guidance text raised to `text-sm`, and h2s that look like metadata.
+- The 2027 Come, Follow Me schedule before 2026-12-28, and the weekly discussion thread.
 
 **Watch out for:**
-- **At deploy, Kit tests the talk builder on his phone** at `knit.marzipan-solutions.com` (touch dragging; he chose this over LAN dev testing, 2026-09-14).
-- **At deploy, re-check the rate limit through the real Caddy:** 6 wrong passwords from one phone → 429, while another device still signs in. The app must bind to localhost only, because `trustedProxies` in `lib/auth.ts` relies on it (`deploy/knit.service` does).
 - **Production `BETTER_AUTH_URL` must be `https://knit.marzipan-solutions.com`.** Invite and reset links are built from it.
-- **The VPS Node must support `--env-file-if-exists`** (BOOTSTRAP §0 checks); the npm scripts depend on it.
+- **The app must bind to 127.0.0.1 only** (`deploy/knit.service` does). `trustedProxies` in `lib/auth.ts` depends on it.
+- **The VPS Node must support `--env-file-if-exists`** (BOOTSTRAP §0 checks).
+- **Phone screenshots without Kit's browser:** `phone-shots.mjs` drove headless Chrome through the DevTools protocol (Node's built-in WebSocket). It lived in the session scratchpad and is gone; rewrite it if needed. Set `MSYS_NO_PATHCONV=1`, or Git Bash rewrites `/sign-in` into a Windows path.
 - **Throwaway member recipe:** an `.mts` script under `node_modules/.cache/` (gitignored, and bare imports like `better-auth` resolve there), run with `node --env-file-if-exists=.env.local --import tsx`; sign in with `curl -c jar -H "Origin: http://localhost:3000" -H "Content-Type: application/json" -d '{"email":…,"password":…}' /api/auth/sign-in/email`. React puts `<!-- -->` between static text and `{values}`, so grep the pieces separately. Delete the users and the script afterward.
 - **Don't overlap `npm run build` with tests.** Its prebuild step rewrites `data/scriptures`. Stop the dev server before building.
 - **Browser checks run in Kit's session only with his OK.** No typing passwords into the browser.

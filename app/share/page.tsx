@@ -32,7 +32,7 @@ export default async function SharePage({ searchParams }: Props) {
       ) : (
         <>
           {attempted && (
-            <p role="alert" className="mb-3 text-sm text-red-700 dark:text-red-400">
+            <p role="alert" className="mb-3 text-sm text-error">
               Couldn't find “{attempted}”. Try a reference with a verse, like Alma 32:21 or Moroni 10:4–5.
             </p>
           )}

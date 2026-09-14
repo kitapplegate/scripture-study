@@ -27,23 +27,23 @@ export default async function SearchPage({ searchParams }: Props) {
     <>
       <h1 className="mb-4 font-serif text-3xl font-semibold">Search</h1>
       <form action="/search" method="get" className="mb-2 flex flex-wrap gap-2">
-        <label htmlFor="q" className="sr-only">Search words</label>
+        <label htmlFor="q" className="basis-full text-sm text-muted">Search words</label>
         <input
           id="q"
           name="q"
           defaultValue={q}
           maxLength={200}
           placeholder='faith hope charity, or "strait gate"'
-          className="min-w-0 flex-1 basis-60 rounded-lg border border-line bg-card px-3 py-2 outline-none focus:border-accent"
+          className="min-w-0 flex-1 basis-60 rounded-lg border border-control bg-card px-3 py-2 outline-none focus:border-accent"
         />
         <label htmlFor="vol" className="sr-only">Volume</label>
-        <select id="vol" name="vol" defaultValue={volume ?? ""} className="rounded-lg border border-line bg-card px-3 py-2">
+        <select id="vol" name="vol" defaultValue={volume ?? ""} className="rounded-lg border border-control bg-card px-3 py-2">
           <option value="">All scriptures</option>
           {VOLUME_FILTERS.map((v) => (
             <option key={v.slug} value={v.slug}>{v.label}</option>
           ))}
         </select>
-        <button type="submit" className="rounded-lg bg-accent px-4 py-2 font-medium text-bg">Search</button>
+        <button type="submit" className="min-h-11 rounded-lg bg-accent px-4 py-2 font-medium text-bg">Search</button>
       </form>
       <p className="mb-6 text-xs text-muted">Use quotes for an exact phrase, “or” for either word, and -word to exclude.</p>
 

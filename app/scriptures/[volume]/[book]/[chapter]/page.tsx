@@ -74,14 +74,14 @@ export default async function ChapterPage({ params }: Props) {
 
       <nav className="mt-6 flex justify-between gap-4 text-sm">
         {prev ? (
-          <Link href={prev.href} className="rounded-lg border border-line px-3 py-2 hover:border-accent">
+          <Link href={prev.href} className="inline-flex min-h-11 items-center rounded-lg border border-control px-3 py-2 hover:border-accent">
             ← {prev.label}
           </Link>
         ) : (
           <span />
         )}
         {next && (
-          <Link href={next.href} className="rounded-lg border border-line px-3 py-2 hover:border-accent">
+          <Link href={next.href} className="inline-flex min-h-11 items-center rounded-lg border border-control px-3 py-2 hover:border-accent">
             {next.label} →
           </Link>
         )}

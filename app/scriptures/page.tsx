@@ -14,7 +14,7 @@ export default async function LibraryPage() {
           <li key={v.slug}>
             <Link
               href={`/scriptures/${v.slug}`}
-              className="block h-full rounded-xl border border-line bg-card p-4 transition hover:border-accent"
+              className="block h-full rounded-xl border border-control bg-card p-4 transition hover:border-accent"
             >
               <div className="font-serif text-xl font-semibold">{v.title}</div>
               {v.subtitle && <div className="mt-1 text-sm text-muted">{v.subtitle}</div>}

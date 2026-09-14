@@ -17,7 +17,7 @@ export default async function TalksPage() {
       <p className="mb-6 text-sm text-muted">Build talks and lessons from scriptures, thoughts, and headings. Only you can see them.</p>
       <div className="mb-6 flex flex-wrap gap-2">
         <form action={createBlankTalkAction}>
-          <button type="submit" className="rounded-lg bg-accent px-4 py-2 font-medium text-bg">New talk</button>
+          <button type="submit" className="min-h-11 rounded-lg bg-accent px-4 py-2 font-medium text-bg">New talk</button>
         </form>
       </div>
       {talks.length === 0 ? (
@@ -26,8 +26,8 @@ export default async function TalksPage() {
         <ul className="divide-y divide-line rounded-xl border border-line bg-card">
           {talks.map((t) => (
             <li key={t.id}>
-              <Link href={`/talks/${t.id}`} className="flex items-baseline justify-between gap-3 px-4 py-3 hover:text-accent">
-                <span className="font-serif text-lg">{t.title}</span>
+              <Link href={`/talks/${t.id}`} className="flex items-baseline justify-between gap-3 px-4 py-3 hover:text-accent max-sm:flex-col max-sm:items-start max-sm:gap-1">
+                <span className="min-w-0 break-words font-serif text-lg">{t.title}</span>
                 <span className="whitespace-nowrap text-xs text-muted">
                   {t.kind}{t.minutes ? ` · ${t.minutes} min` : ""} · {timeAgo(t.updated_at)}
                 </span>

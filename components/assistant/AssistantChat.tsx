@@ -56,7 +56,7 @@ export function AssistantChat({ compact = false }: { compact?: boolean }) {
             <button
               key={s}
               onClick={() => send(s)}
-              className={`rounded-full border border-line px-3 py-1.5 text-left text-sm hover:border-accent ${compact ? "bg-bg" : "bg-card"}`}
+              className={`min-h-11 rounded-full border border-control px-3 py-1.5 text-left text-sm hover:border-accent ${compact ? "bg-bg" : "bg-card"}`}
             >
               {s}
             </button>
@@ -78,7 +78,7 @@ export function AssistantChat({ compact = false }: { compact?: boolean }) {
       </div>
 
       {error && (
-        <div role="alert" className="mt-4 rounded-lg border border-red-300 p-3 text-sm text-red-700 dark:border-red-800 dark:text-red-400">
+        <div role="alert" className="mt-4 rounded-lg border border-error p-3 text-sm text-error">
           {friendlyError(error)}{" "}
           <button onClick={() => regenerate()} className="underline">Try again</button>
         </div>
@@ -105,10 +105,10 @@ export function AssistantChat({ compact = false }: { compact?: boolean }) {
           rows={2}
           maxLength={4000}
           placeholder="What scriptures are you looking for?"
-          className={`min-w-0 flex-1 resize-none rounded-lg border border-line px-3 py-2 outline-none focus:border-accent ${compact ? "bg-bg" : "bg-card"}`}
+          className={`min-w-0 flex-1 resize-none rounded-lg border border-control px-3 py-2 outline-none focus:border-accent ${compact ? "bg-bg" : "bg-card"}`}
         />
         {busy ? (
-          <button type="button" onClick={() => stop()} className="rounded-lg border border-line px-4">Stop</button>
+          <button type="button" onClick={() => stop()} className="rounded-lg border border-control px-4">Stop</button>
         ) : (
           <button type="submit" disabled={!input.trim()} className="rounded-lg bg-accent px-4 font-medium text-bg disabled:opacity-50">
             Send
@@ -140,7 +140,7 @@ function ToolChip({ part }: { part: ToolPart }) {
         ? `${done ? "Read" : "Reading"} ${part.input?.references?.join(", ") ?? "…"}${done && missing ? ` · ${missing} not found` : ""}`
         : name;
   return (
-    <span className={`inline-block rounded-full border px-2 py-0.5 text-xs ${failed ? "border-red-300 text-red-700" : "border-line text-muted"}`}>
+    <span className={`inline-block rounded-full border px-2 py-0.5 text-xs ${failed ? "border-error text-error" : "border-line text-muted"}`}>
       {failed ? `${label} · failed` : label}
     </span>
   );

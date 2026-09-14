@@ -102,7 +102,7 @@ function Welcome() {
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Link href="/sign-in" className="rounded-lg bg-accent px-5 py-2.5 font-medium text-bg">Sign in</Link>
-          <Link href="/scriptures" className="rounded-lg border border-line px-5 py-2.5 hover:border-accent">
+          <Link href="/scriptures" className="rounded-lg border border-control px-5 py-2.5 hover:border-accent">
             Browse the scriptures
           </Link>
         </div>
