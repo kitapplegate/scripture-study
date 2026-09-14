@@ -177,7 +177,11 @@ anyway.
 - **D8 — groups** — ✅ decided 2026-09-13 (default): for now the whole invited
   circle is one group, so every member sees the feed. The `groups` tables wait until
   there's a real need for more than one circle.
-- **D9 — family hub** — ✅ decided 2026-09-14 (Kit): Knit becomes the family's one app.
+- **D9 — family hub** — ↩️ **reversed later on 2026-09-14** (Kit): recipe-chat stays a
+  separate app, because some family members aren't spiritual and shouldn't need a
+  scripture app to reach the recipes. Knit stays scripture study. Nothing was ported, so
+  nothing is undone. Whether other family apps (the book list) would live in Knit wasn't
+  re-decided. The original decision, for the record: Knit becomes the family's one app.
   Scripture study is its first section. `recipe-chat` (live at `recipes.`) gets ported
   in after Knit launches, and future family apps (the book list) are built inside
   Knit rather than as separate apps. The order: finish and deploy Knit, then port
@@ -520,3 +524,6 @@ anyway.
   Only a database admin can make a link; a role the caller claims isn't trusted.
   `tests/password-resets.test.ts` 9/9; curl on dev confirmed the flow. **Not yet
   verified:** clicking through both forms in a browser.
+- **2026-09-14** — **Recipes stay separate** (Kit; D9 reversed): some family members
+  aren't spiritual, so recipe-chat keeps its own app at `recipes.`. Knit launches as
+  scripture study only.

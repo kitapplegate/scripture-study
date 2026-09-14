@@ -2,7 +2,7 @@
 
 **Action:** Deploy prep, done locally. Re-run `npx next build` clean, then add a `deploy/` folder modeled on recipe-chat's: a systemd unit (own Linux user, binds `127.0.0.1` only), a Caddy snippet for `knit.marzipan-solutions.com`, a production `.env` checklist (no values), and a nightly `pg_dump` script with a systemd timer that keeps a week of dumps.
 
-**Why now:** Kit's plan (2026-09-14, SPEC D9): launch Knit for the family, then port recipes. The code work before launch is done: the talk builder, the rate-limit IP fix, and password-reset links. What's left is getting it onto the VPS safely (SPEC slice 2).
+**Why now:** Kit wants to launch Knit for the family (recipes stay a separate app: SPEC D9 was reversed 2026-09-14). The code work before launch is done: the talk builder, the rate-limit IP fix, and password-reset links. What's left is getting it onto the VPS safely (SPEC slice 2).
 
 **Start here:** `C:\AI\recipe-chat\deploy\` (`Caddyfile.snippet`, `*.service`) for the VPS conventions; SPEC "Architecture" and "Security → Shared VPS". `package.json` `db:migrate` also builds the scripture data and loads verses, so the VPS needs enough free memory for that.
 
@@ -20,4 +20,3 @@
 - **Production `BETTER_AUTH_URL` must be `https://knit.marzipan-solutions.com`.** Invite and reset links are built from it.
 - **Throwaway member recipe:** an `.mts` script under `node_modules/.cache/` (gitignored, and bare imports like `better-auth` resolve there), run with `node --env-file-if-exists=.env.local --import tsx`; sign in with `curl -c jar -H "Origin: http://localhost:3000" -H "Content-Type: application/json" -d '{"email":…,"password":…}' /api/auth/sign-in/email`. React puts `<!-- -->` between static text and `{values}`, so grep the pieces separately. Delete the users and the script afterward.
 - **Browser checks run in Kit's session only with his OK.** No typing passwords into the browser.
-- **Recipes stay out of this repo** (principle 1): when the port starts, recipe data is loaded from outside the public repo.
