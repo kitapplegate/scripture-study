@@ -636,4 +636,5 @@ anyway.
   member; expired endpoints are removed after a 404/410. A manifest, service worker, and
   home-screen icon make iPhone/iPad push possible after installing Knit to the Home Screen.
   VAPID keys are generated once into the VPS `.env` without being printed. VERIFICATION
-  row 28.
+  row 28. Deployed the same day (`8fc3d26`, migration 009 applied); an actual device
+  delivery still needs a member to opt in.
