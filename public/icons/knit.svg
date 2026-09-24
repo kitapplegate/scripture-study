@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Knit">
+  <rect width="512" height="512" rx="104" fill="#8a5a2b"/>
+  <circle cx="256" cy="256" r="160" fill="#fbf8f3"/>
+  <path d="M171 143v226h48v-83l82 83h66L257 258l104-115h-62l-80 91v-91z" fill="#2a2520"/>
+</svg>

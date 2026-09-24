@@ -31,6 +31,11 @@ run_as_app git -C "$APP_DIR" pull --ff-only
 echo "==> dependencies"
 run_as_app bash -c "cd '$APP_DIR' && npm ci"
 
+# Generate the Web Push identity once and keep it in the server-only .env. The helper
+# refuses a partial configuration rather than rotating keys and breaking subscriptions.
+echo "==> push configuration"
+run_as_app node "$APP_DIR/scripts/configure-vapid.mjs"
+
 # Builds data/scriptures, runs better-auth's and our migrations, and reloads the verses
 # table in one transaction. Every step is safe to re-run.
 echo "==> migrations"

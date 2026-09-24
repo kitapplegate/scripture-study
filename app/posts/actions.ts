@@ -2,9 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { after } from "next/server";
 import { z } from "zod";
 import { preparePost } from "@/lib/post-input";
 import * as posts from "@/lib/posts";
+import { notifyNewPost, notifyPostComment } from "@/lib/push";
 import { requireUser } from "@/lib/session";
 
 const dbId = z.string().regex(/^\d{1,18}$/);
@@ -29,7 +31,10 @@ export async function createPostAction(_prev: FormState, formData: FormData): Pr
   // Send back what was typed, so the form keeps it after an error.
   if (!prepared.ok) return { error: prepared.error, values: { body, reference, linkUrl } };
 
-  await posts.createPost({ authorId: user.id, ...prepared.post });
+  const postId = await posts.createPost({ authorId: user.id, ...prepared.post });
+  after(() => notifyNewPost({ authorId: user.id, authorName: user.name, postId }).catch(() => {
+    console.warn("[push] could not load recipients for a new post");
+  }));
   revalidatePath("/feed");
   revalidatePath("/");
   // Only two places to return to; never an arbitrary URL from the form.
@@ -78,6 +83,9 @@ export async function addCommentAction(_prev: FormState, formData: FormData): Pr
 
   const created = await posts.addComment({ authorId: user.id, postId: parsed.data.postId, body: parsed.data.body });
   if (!created) return { error: "That post no longer exists." };
+  after(() => notifyPostComment({ commenterId: user.id, commenterName: user.name, postId: parsed.data.postId }).catch(() => {
+    console.warn("[push] could not load the recipient for a comment");
+  }));
   revalidatePath(`/posts/${parsed.data.postId}`);
   revalidatePath("/feed");
   revalidatePath("/");

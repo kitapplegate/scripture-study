@@ -24,6 +24,7 @@ function navLinks(user: { role?: string | null } | undefined) {
     ...(user
       ? [
           { href: "/feed", label: "Feed" },
+          { href: "/notifications", label: "Notifications" },
           { href: "/study", label: "Assistant" },
           { href: "/talks", label: "My talks" },
         ]

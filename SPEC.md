@@ -84,6 +84,7 @@ work well on phones.
 - `posts` — author, group, verse_id, end_verse_id, body, created_at, edited_at
 - `post_reactions` — post, user, kind
 - `comments` — post, author, body, created_at
+- `push_subscriptions` — member, browser push endpoint and encryption keys, timestamps
 - `highlights` — user, verse_id, end_verse_id, color
 - `notes` — user, verse_id, end_verse_id, body, visibility (private/group), group
 - `plans`, `plan_items`, `plan_progress`, `reading_log` — plans, streaks, accountability
@@ -107,7 +108,7 @@ work well on phones.
 | 10 | **Highlights + private notes** | Highlight and note a verse; reload; still there; the other user can't see them |
 | 11 | **Reading plans + streaks + group accountability** | Two members on one plan see each other's progress |
 | 12 | **Come Follow Me week** (reading assignments + a link to the lesson; no manual text) + a weekly discussion thread | This week's readings show with the correct link |
-| — | Later: talk/lesson builder with drag-and-drop, verse of the day, read-aloud (browser speech), memorization flashcards and family challenges, Isaiah ↔ 2 Nephi side-by-side, PWA/offline, email digest, Nave's Topical Bible and Easton's Bible Dictionary | — |
+| — | Later: verse of the day, read-aloud (browser speech), memorization flashcards and family challenges, Isaiah ↔ 2 Nephi side-by-side, offline reading, email digest, Nave's Topical Bible and Easton's Bible Dictionary | — |
 
 ## Security
 
@@ -627,3 +628,12 @@ anyway.
   `components/ReactionButtons.tsx`). One of each kind per member per comment, and they're
   deleted with the comment. VERIFICATION row 27. Unit-tested and deployed the same day
   (`605bd71`, migration 008 applied on the VPS); not yet seen in a browser.
+- **2026-09-24** — **Opt-in browser push notifications (Kit).** Members can enable or
+  disable notifications per device at `/notifications`. Knit sends them for a new family
+  post (to everyone subscribed except its author) and for a comment on your post (to the
+  post author, except self-comments). Notification previews name the person but do not put
+  family post/comment text on the lock screen. `migrations/009` stores multiple devices per
+  member; expired endpoints are removed after a 404/410. A manifest, service worker, and
+  home-screen icon make iPhone/iPad push possible after installing Knit to the Home Screen.
+  VAPID keys are generated once into the VPS `.env` without being printed. VERIFICATION
+  row 28.

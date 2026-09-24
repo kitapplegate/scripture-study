@@ -75,6 +75,9 @@ cat > "$ENVFILE" <<ENV
 DATABASE_URL=postgresql://knit:$DBPASS@127.0.0.1:5432/knit
 BETTER_AUTH_URL=https://knit.marzipan-solutions.com
 BETTER_AUTH_SECRET=$AUTHSECRET
+NEXT_PUBLIC_VAPID_PUBLIC_KEY=
+VAPID_PRIVATE_KEY=
+VAPID_SUBJECT=https://knit.marzipan-solutions.com
 GEMINI_API_KEY=
 GROQ_API_KEY=
 OPENROUTER_API_KEY=
@@ -82,7 +85,8 @@ ENV
 unset DBPASS AUTHSECRET
 ```
 
-Then add the assistant keys: `sudoedit /opt/knit/app-src/.env`. The layout is in
+Then add the assistant keys: `sudoedit /opt/knit/app-src/.env`. `deploy.sh` generates
+the VAPID key pair once when its three settings are blank. The layout is in
 `deploy/env.example`. Confirm:
 
 ```sh
