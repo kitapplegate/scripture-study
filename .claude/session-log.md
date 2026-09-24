@@ -1,5 +1,19 @@
 # Session Log
 
+## 2026-09-24 18:11
+
+**Summary:** Added and deployed opt-in Web Push for the two events Kit chose: new family posts and comments on your posts. Commit `8fc3d26` adds `migrations/009_push_subscriptions.sql`, multi-device subscription storage and VAPID delivery in `lib/push.ts`, an authenticated `/notifications` enable/disable page, the service worker and PWA manifest/icons, and post/comment hooks that run after the response so notification failure cannot block posting. Authors do not receive their own new-post notification and self-comments do not notify; lock-screen previews name the actor but omit family content. Stale 404/410 endpoints are removed. The deploy script now generates persistent VAPID keys once into the mode-600 VPS `.env` without printing them. The first production pass used the old in-memory deploy script body after pulling its own update and therefore skipped key generation; rerunning the now-updated script corrected that before the final build/restart. Deployment state was recorded in `1c35596`.
+
+**Status:** Push targeting and subscription behavior — **tested locally**: `npm test` 145/145, including `tests/push-notifications.test.ts` 3/3; `npm run typecheck` clean; `npx next build` exit 0; `npm audit --omit=dev` found 0 vulnerabilities; deployment script and service-worker syntax checks passed. Push infrastructure — **verified in the real environment**: migration 009 is applied, `push_subscriptions` exists and is owned by `knit`, the service is active, exactly three push settings are non-empty in the `knit`-owned mode-600 `.env`, and the journal has no error-priority entries since deploy. Public HTTPS checks returned 200 for the manifest, service worker, and both PNG icons; `/sw.js` has no-store and self-only CSP headers; signed-out `/notifications` redirects to sign-in; neighboring sites remain 200. Actual phone notification delivery — **not yet verified** because no member device has opted in.
+
+**Next:** Verify both notification types end to end on a real phone with two member accounts; details and acceptance checks are in `NEXT.md`.
+
+**Open tasks:**
+- [ ] next — opt a real phone in and verify new-post and comment delivery, deep links, privacy-preserving preview text, and self-notification suppression; record the device/browser in VERIFICATION row 28
+- [ ] not-yet-verified — actual Web Push delivery while Knit is closed
+
+**Deferred:** Reduce assistant model rounds by returning capped full verse text from `searchScriptures`; the previous `NEXT.md` described this performance slice. Older optional items remain in SPEC/history rather than being copied into this handoff.
+
 ## 2026-09-14 12:42
 
 **Summary:** Launch day. T3 print view (`a59e552`). Sign-in rate limiting now keys on each member's IP behind Caddy: better-auth dropped multi-address `X-Forwarded-For` without `trustedProxies` (`9dace4c`). Added admin reset links (`eee6cb1`), the Codex UI fixes and the Mosiah 18:21 header (`f1d1616`), and `deploy/`. Knit went live at `knit.marzipan-solutions.com` (the VPS lacked `unzip`). D9 was reversed: recipes stay separate. After launch: verse popup and saved chat (`5ca7624`; a late dialog `close` event swallowed taps), free-form posts (`c9c174c`, migration 007), post editing and a feed-first home (`d12ee8d`), comment reactions (`605bd71`, migration 008). The slow assistant is Gemini free-tier latency (28–75s per call; Groq 0.4s). Kit chose Flash-Lite first with Groq as backup, and dropped OpenRouter (403). My mistakes: `sudo psql "$DATABASE_URL"` logged the DB password (rotated), and a deploy Kit stopped still ran. The dev server stays off (low memory).
