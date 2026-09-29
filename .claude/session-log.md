@@ -1,5 +1,14 @@
 # Session Log
 
+## 2026-09-29 — Site done (Kit's check)
+
+**Summary:** Kit reports the site is done and looks good on both his computer and his phone. No code changed in this entry.
+
+**Status:** Live site layout on desktop and phone — **verified in the real environment** (Kit, by eye, 2026-09-29; recorded as VERIFICATION row 29). This was a visual check only. It does not cover push notification delivery (row 28).
+
+**Open tasks:**
+- [ ] blocked (Kit) — Opt a real phone in and verify new-post/comment delivery, deep links, private preview text, and self-notification suppression; record the device/browser in VERIFICATION row 28.
+
 ## 2026-09-28 20:10 — Backlog triage (Brittany)
 
 **Summary:** Backlog triage by Brittany's weekly job. Open tasks from the previous entry were sorted into done-automatically / needs-Kit / parked / optional / drop. Only next and blocked stay as checkboxes; the previous entry keeps the original wording. Scripture Study's opt-in Web Push infrastructure is deployed and locally tested, but the acceptance test deliberately requires a real phone and member accounts. Nothing repository-only can prove delivery.
