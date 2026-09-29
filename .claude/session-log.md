@@ -1,5 +1,13 @@
 # Session Log
 
+## 2026-09-28 20:10 — Backlog triage (Brittany)
+
+**Summary:** Backlog triage by Brittany's weekly job. Open tasks from the previous entry were sorted into done-automatically / needs-Kit / parked / optional / drop. Only next and blocked stay as checkboxes; the previous entry keeps the original wording. Scripture Study's opt-in Web Push infrastructure is deployed and locally tested, but the acceptance test deliberately requires a real phone and member accounts. Nothing repository-only can prove delivery.
+
+**Open tasks:**
+- [ ] blocked (Kit) — Opt a real phone in and verify new-post/comment delivery, deep links, private preview text, and self-notification suppression; record the device/browser in VERIFICATION row 28.
+- [ ] blocked (Kit) — Verify actual Web Push delivery while Knit is closed.
+
 ## 2026-09-24 18:11
 
 **Summary:** Added and deployed opt-in Web Push for the two events Kit chose: new family posts and comments on your posts. Commit `8fc3d26` adds `migrations/009_push_subscriptions.sql`, multi-device subscription storage and VAPID delivery in `lib/push.ts`, an authenticated `/notifications` enable/disable page, the service worker and PWA manifest/icons, and post/comment hooks that run after the response so notification failure cannot block posting. Authors do not receive their own new-post notification and self-comments do not notify; lock-screen previews name the actor but omit family content. Stale 404/410 endpoints are removed. The deploy script now generates persistent VAPID keys once into the mode-600 VPS `.env` without printing them. The first production pass used the old in-memory deploy script body after pulling its own update and therefore skipped key generation; rerunning the now-updated script corrected that before the final build/restart. Deployment state was recorded in `1c35596`.
