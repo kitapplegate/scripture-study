@@ -1,13 +1,13 @@
 # Session Log
 
-## 2026-09-29 — Site done (Kit's check)
+## 2026-09-29 02:57 — Site done (Kit's check)
 
-**Summary:** Kit reports the site is done and looks good on both his computer and his phone. No code changed in this entry.
+**Summary:** Kit reports the site is done and looks good on both his computer and his phone. No code changed this session. Recorded in `d229585` and pushed to `origin/main`, along with the unpushed log commits `3da5609` and `f53addb`. The live VPS was not redeployed; there was nothing to deploy.
 
 **Status:** Live site layout on desktop and phone — **verified in the real environment** (Kit, by eye, 2026-09-29; recorded as VERIFICATION row 29). This was a visual check only. It does not cover push notification delivery (row 28).
 
 **Open tasks:**
-- [ ] blocked (Kit) — Opt a real phone in and verify new-post/comment delivery, deep links, private preview text, and self-notification suppression; record the device/browser in VERIFICATION row 28.
+- [ ] next — Opt a real phone in and verify new-post/comment delivery, deep links, private preview text, and self-notification suppression; record the device/browser in VERIFICATION row 28.
 
 ## 2026-09-28 20:10 — Backlog triage (Brittany)
 
