@@ -1,5 +1,22 @@
 # Session Log
 
+## 2026-10-04 00:30 — Deep Study: Josephus library, search, and chat
+
+**Summary:** A friend wanted a way to read the same events from other ancient angles. Kit chose both halves, events and wording (D10), as a separate Deep Study section. Josephus's *Antiquities* and *Wars* come from Project Gutenberg. Jubilees, Young's Literal, and Brenton aren't on Gutenberg, and the Dead Sea Scrolls are links only (copyright). `scripts/build-deep-study.mjs` splits Josephus into Whiston's sections (`jos-ant.7.13.1`). Parsing traps: the table of contents repeats every heading, one heading has no period and one is roman, and footnote markers are glued ("over1") or spaced ("; 2 Joseph"). Markers are removed only when they're in that book's FOOTNOTES list. Migration 010 adds `ds_passages`. The `/deep-study` pages and the `/deep-study/chat` assistant (D12: scripture plus Josephus, its own chat) share the new `lib/assistant-route.ts` with the study assistant. A live run found models writing `[[Ref|quote]]`; fixed in `95a43a8`. Main work `dc1ea10`. Enoch and the Apocrypha are pinned but not parsed.
+
+**Status:**
+- Deep Study library + search — **tested in integration**: `npm test` 160/160; curl on dev (VERIFICATION 30)
+- Deep Study chat — **tested in integration**: two live Gemini runs, every citation real (VERIFICATION 31); no browser
+- Piped-citation fix — **tested locally**: regression test (VERIFICATION 32)
+- Deploy — **not yet verified**: not pushed; the VPS needs migration 010
+
+**Open tasks:**
+- [ ] next — Deploy `dc1ea10` and try `/deep-study/chat` on the live site; Josephus chip shows "Not scripture" (VERIFICATION 30–31)
+- [ ] blocked (Kit) — D11: who approves events (blocks DS1's approval step)
+- [ ] not-yet-verified — Push delivery on a real phone (VERIFICATION 28), carried over
+
+**Deferred:** Parse Charles's 1 Enoch (#77935) and the KJV Apocrypha (#124); DS1 parallels in the canon; the Gemini `thoughtSignature` warning across fallbacks.
+
 ## 2026-09-29 02:57 — Site done (Kit's check)
 
 **Summary:** Kit reports the site is done and looks good on both his computer and his phone. No code changed this session. Recorded in `d229585` and pushed to `origin/main`, along with the unpushed log commits `3da5609` and `f53addb`. The live VPS was not redeployed; there was nothing to deploy.
