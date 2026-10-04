@@ -8,13 +8,34 @@ import { CitationPanel } from "./CitationPanel";
 import { CitedMarkdown } from "./CitedMarkdown";
 import { useCitations } from "./useCitations";
 
-const transport = new DefaultChatTransport({ api: "/api/assistant" });
-
-const STARTERS = [
-  "Scriptures about enduring hard times",
-  "Verses on keeping the Sabbath day holy",
-  "What does the Book of Mormon teach about grace?",
-];
+// "study" is the study assistant (scripture only); "deep-study" is the Deep Study chat
+// (SPEC D12), which also searches Deep Study texts. Each has its own endpoint, citation
+// checker, and saved conversation.
+const VARIANTS = {
+  study: {
+    transport: new DefaultChatTransport({ api: "/api/assistant" }),
+    citationsApi: "/api/passages",
+    storagePrefix: "",
+    placeholder: "What scriptures are you looking for?",
+    starters: [
+      "Scriptures about enduring hard times",
+      "Verses on keeping the Sabbath day holy",
+      "What does the Book of Mormon teach about grace?",
+    ],
+  },
+  "deep-study": {
+    transport: new DefaultChatTransport({ api: "/api/deep-study/assistant" }),
+    citationsApi: "/api/deep-study/passages",
+    storagePrefix: "deep-study:",
+    placeholder: "What event or person do you want to compare?",
+    starters: [
+      "How does Josephus tell the story of David numbering Israel?",
+      "Compare the accounts of the fall of Jericho",
+      "What does Josephus add about Moses as a child?",
+    ],
+  },
+} as const;
+export type ChatVariant = keyof typeof VARIANTS;
 
 // Errors from our route arrive as the raw response body ({"error": "..."}).
 function friendlyError(error: Error) {
@@ -38,9 +59,19 @@ function tabStorage() {
 // the panel instead of moving the whole page. The conversation is saved in the tab per
 // member (lib/assistant-history.ts), so the home panel and the full page share it, and
 // reading a verse or pressing Back doesn't lose it.
-export function AssistantChat({ compact = false, userId }: { compact?: boolean; userId: string }) {
+export function AssistantChat({
+  compact = false,
+  userId,
+  variant = "study",
+}: {
+  compact?: boolean;
+  userId: string;
+  variant?: ChatVariant;
+}) {
+  const config = VARIANTS[variant];
+  const chatKey = `${config.storagePrefix}${userId}`; // a separate saved chat per variant
   const [input, setInput] = useState("");
-  const { messages, setMessages, sendMessage, status, stop, error, regenerate } = useChat({ transport });
+  const { messages, setMessages, sendMessage, status, stop, error, regenerate } = useChat({ transport: config.transport });
   const busy = status === "submitted" || status === "streaming";
   const [restored, setRestored] = useState(false);
   const restoredFor = useRef<string | null>(null);
@@ -48,23 +79,23 @@ export function AssistantChat({ compact = false, userId }: { compact?: boolean; 
   // Bring back this member's conversation from earlier in this tab. Loaded after mount,
   // because storage doesn't exist during the server render.
   useEffect(() => {
-    if (restoredFor.current === userId) return;
-    restoredFor.current = userId;
-    const saved = loadChat<UIMessage>(tabStorage(), userId);
+    if (restoredFor.current === chatKey) return;
+    restoredFor.current = chatKey;
+    const saved = loadChat<UIMessage>(tabStorage(), chatKey);
     if (saved.messages.length > 0) setMessages(saved.messages);
     if (saved.draft) setInput(saved.draft);
     setRestored(true);
-  }, [userId, setMessages]);
+  }, [chatKey, setMessages]);
 
   // Save when an answer finishes and as the draft changes; never a half-streamed answer.
   useEffect(() => {
-    if (restored && !busy) saveChat(tabStorage(), userId, { messages, draft: input });
-  }, [restored, busy, messages, input, userId]);
+    if (restored && !busy) saveChat(tabStorage(), chatKey, { messages, draft: input });
+  }, [restored, busy, messages, input, chatKey]);
 
   function startOver() {
     setMessages([]);
     setInput("");
-    clearChat(tabStorage(), userId);
+    clearChat(tabStorage(), chatKey);
   }
   const bottomRef = useRef<HTMLDivElement>(null);
   const scrollBox = useRef<HTMLDivElement>(null);
@@ -88,7 +119,7 @@ export function AssistantChat({ compact = false, userId }: { compact?: boolean; 
     <div>
       {messages.length === 0 && (
         <div className="mb-4 flex flex-wrap gap-2">
-          {STARTERS.slice(0, compact ? 2 : 3).map((s) => (
+          {config.starters.slice(0, compact ? 2 : 3).map((s) => (
             <button
               key={s}
               onClick={() => send(s)}
@@ -115,7 +146,13 @@ export function AssistantChat({ compact = false, userId }: { compact?: boolean; 
               {m.parts.map((p) => (p.type === "text" ? p.text : "")).join("")}
             </div>
           ) : (
-            <AssistantMessage key={m.id} message={m} done={!busy || i < messages.length - 1} compact={compact} />
+            <AssistantMessage
+              key={m.id}
+              message={m}
+              done={!busy || i < messages.length - 1}
+              compact={compact}
+              citationsApi={config.citationsApi}
+            />
           ),
         )}
         {status === "submitted" && <p className="text-sm text-muted">Thinking…</p>}
@@ -148,7 +185,7 @@ export function AssistantChat({ compact = false, userId }: { compact?: boolean; 
           }}
           rows={2}
           maxLength={4000}
-          placeholder="What scriptures are you looking for?"
+          placeholder={config.placeholder}
           className={`min-w-0 flex-1 resize-none rounded-lg border border-control px-3 py-2 outline-none focus:border-accent ${compact ? "bg-bg" : "bg-card"}`}
         />
         {busy ? (
@@ -178,9 +215,9 @@ function ToolChip({ part }: { part: ToolPart }) {
   const queries = part.input?.queries?.join("”, “") ?? "…";
   const missing = part.output?.passages?.filter((p) => !p.found).length ?? 0;
   const label =
-    name === "searchScriptures"
-      ? `${done ? "Searched" : "Searching"} “${queries}”${done ? ` · ${part.output?.results?.length ?? 0} found` : ""}`
-      : name === "readPassages"
+    name === "searchScriptures" || name === "searchDeepStudy"
+      ? `${done ? "Searched" : "Searching"} ${name === "searchDeepStudy" ? "Deep Study " : ""}“${queries}”${done ? ` · ${part.output?.results?.length ?? 0} found` : ""}`
+      : name === "readPassages" || name === "readDeepStudy"
         ? `${done ? "Read" : "Reading"} ${part.input?.references?.join(", ") ?? "…"}${done && missing ? ` · ${missing} not found` : ""}`
         : name;
   return (
@@ -190,11 +227,21 @@ function ToolChip({ part }: { part: ToolPart }) {
   );
 }
 
-function AssistantMessage({ message, done, compact }: { message: UIMessage; done: boolean; compact: boolean }) {
+function AssistantMessage({
+  message,
+  done,
+  compact,
+  citationsApi,
+}: {
+  message: UIMessage;
+  done: boolean;
+  compact: boolean;
+  citationsApi: string;
+}) {
   const text = message.parts.map((p) => (p.type === "text" ? p.text : "")).join("\n\n");
   const reasoning = message.parts.map((p) => (p.type === "reasoning" ? p.text : "")).join("");
   const tools = message.parts.filter((p) => p.type.startsWith("tool-")) as unknown as ToolPart[];
-  const citations = useCitations(text, done);
+  const citations = useCitations(text, done, citationsApi);
 
   return (
     <div className={`rounded-xl border border-line p-4 ${compact ? "bg-bg" : "bg-card"}`}>

@@ -108,7 +108,93 @@ work well on phones.
 | 10 | **Highlights + private notes** | Highlight and note a verse; reload; still there; the other user can't see them |
 | 11 | **Reading plans + streaks + group accountability** | Two members on one plan see each other's progress |
 | 12 | **Come Follow Me week** (reading assignments + a link to the lesson; no manual text) + a weekly discussion thread | This week's readings show with the correct link |
-| — | Later: verse of the day, read-aloud (browser speech), memorization flashcards and family challenges, Isaiah ↔ 2 Nephi side-by-side, offline reading, email digest, Nave's Topical Bible and Easton's Bible Dictionary | — |
+| — | Later: verse of the day, read-aloud (browser speech), memorization flashcards and family challenges, Isaiah ↔ 2 Nephi side-by-side (now Deep Study DS1–DS2), offline reading, email digest, Nave's Topical Bible and Easton's Bible Dictionary | — |
+
+## Deep Study (planned 2026-10-03, D10)
+
+A separate section for reading **the same events, and the same words, from other
+angles**. It started from a friend's wish for an app that sets other ancient accounts
+next to scripture. The goal is not to argue or to rank sources. The reader sees how
+each account tells it and draws their own conclusions. It has two halves (Kit: "both, go
+big or go home"):
+
+- **Events**: one event (e.g. "David numbers Israel") with every account of it side
+  by side: in the canon (2 Sam 24 / 1 Chr 21) and outside it (Josephus, *Ant.* 7.13).
+- **Wording**: one verse through its ancient language lines: the Hebrew or Greek
+  words with glosses, then the old translations made from them (Greek Septuagint,
+  Latin Vulgate) in English.
+
+### Rules
+
+1. **Separate from the standard works** (Kit, D10). Deep Study texts live in their
+   own tables and routes (`/deep-study/...`). The study assistant never searches
+   them, and the regular search page doesn't return them. Every Deep Study page
+   carries a label: "Not scripture. Ancient texts for comparison," with D&C 91 as the
+   framing. Only the Deep Study chat (D12) reads both kinds of text, and it tags every
+   Deep Study citation "Not scripture" with no "Add to talk".
+2. **Same copyright rule as the canon (principle 2).** Store only public-domain text
+   (US: published before 1931) or openly licensed text (CC-BY, with attribution in
+   the app). Modern translations and critical editions get **links**, never copies.
+   Every source gets a row in `data/SOURCES.md` with its pinned download and license.
+3. **Verse ids stay forever (principle 6).** Deep Study sources get their own
+   namespaced ids (`jos-ant.7.13.1`, `jub.12.3`, `lxx.ps.22.1`). Translations of a
+   canon verse are keyed to the canon id through a versification map, because LXX
+   and Vulgate numbering differ (Psalms most of all).
+4. **Events are curated, not generated.** An event and the passages linked to it are
+   checked by a person before they show. A model may draft candidate links, but
+   every reference must resolve against our own data (principle 3), and nothing
+   shows until it's approved.
+5. **No verdicts.** The app presents accounts side by side. It doesn't harmonize them
+   or say which is right. Differences show as different text, not as editorial
+   commentary.
+
+### Sources (all to be pinned in `data/raw/`; ⚠ = re-check the license at download)
+
+| Kind | Source | License |
+|---|---|---|
+| Hebrew OT words, glosses, Strong's | STEPBible TAHOT (Tyndale House), on the Westminster Leningrad Codex | CC-BY 4.0 |
+| Greek NT words, glosses, Strong's | STEPBible TAGNT | CC-BY 4.0 |
+| Versification map (MT/LXX/Vulgate/KJV) | STEPBible TVTMS | CC-BY 4.0 |
+| Greek OT text | Swete's LXX (1887–94) ⚠. Avoid Rahlfs (1935) and CATSS, which are copyrighted or restricted | PD |
+| Septuagint in English | Brenton (1844) | PD |
+| Latin Vulgate | Clementine Vulgate | PD |
+| Vulgate in English | Douay-Rheims (Challoner) | PD |
+| Literal English | Young's Literal Translation (1898) | PD |
+| Greek NT text (alternate) | Robinson-Pierpont Byzantine; Westcott-Hort; SBLGNT ⚠ | PD; CC-BY ⚠ |
+| Retelling of OT history | Josephus, *Antiquities* and *Jewish War* (Whiston, 1737) | PD |
+| Retellings of Genesis–Exodus, Enoch | *Jubilees*, *1 Enoch* (R.H. Charles, 1913–17) | PD |
+| Apocrypha | KJV 1611 Apocrypha (esp. 1–2 Maccabees) | PD |
+| Gospel harmony (seed for events) | A.T. Robertson, *Harmony of the Gospels* (1922) | PD |
+| Dead Sea Scrolls | **links only**. Transcriptions (DJD) and translations (Vermes, Wise/Abegg/Cook) and the IAA image library are copyrighted or restricted | — |
+| Not usable | Nestle-Aland, NETS, Stuttgart Vulgate, Rahlfs, the Church's JST excerpts | © |
+
+The Book of Mormon, D&C and PGP have no surviving source-language text, so on the
+wording side they get parallels only (e.g. 2 Ne 12 next to KJV Isaiah 2, next to the
+Hebrew).
+
+### Data model (draft)
+
+- `ds_sources`: id, title, translator, year, license, attribution, source url
+- `ds_passages`: id (namespaced), source, citation label, text, `tsvector`
+- `ds_verse_versions`: canon verse id → source, text (LXX/Vulgate/YLT English lines)
+- `events`: id, title, short neutral description, canonical order, approved_by/at
+- `event_accounts`: event, kind (canon | ds | link), start/end id or url, note
+- Hebrew and Greek word data stays in files built by a script (like
+  `data/scriptures/`), not in Postgres. It's read-only and large.
+
+### Slices
+
+| # | Slice | Proven when |
+|---|---|---|
+| DS1 | **Parallels in the canon**: `events` + `event_accounts`, about 25 hand-checked events (Samuel/Kings ↔ Chronicles, Exodus–Numbers ↔ Deuteronomy, Genesis ↔ Moses/Abraham, Isaiah ↔ 2 Nephi, Matthew 5–7 ↔ 3 Nephi 12–14, Malachi 3–4 ↔ 3 Nephi 24–25, Paul's conversion ×4); "Also told in…" on the reader | Reading 2 Samuel 24 shows "Also told in 1 Chronicles 21"; an unapproved event doesn't show |
+| DS2 | **Side-by-side event page** `/deep-study/events/[id]`, columns on desktop and swipe on phone | David's census shows both accounts in full, each verse linking back to the reader |
+| DS3 | **Original words**: a "Hebrew/Greek" view of a verse from TAHOT/TAGNT (word, transliteration, gloss, Strong's) | John 1:1 shows λόγος glossed "word", G3056; Genesis 1:1 shows בְּרֵאשִׁית |
+| DS4 | **Ancient translations in parallel**: KJV · Brenton LXX · Douay-Rheims · YLT for one verse, aligned by TVTMS | Psalm 23:1 lines up with LXX/Vulgate Psalm 22:1 |
+| DS5 | **First retelling, Josephus**: ingest *Antiquities*, own ids, a Deep Study-only search | A Deep Study search for "numbered the people" finds *Ant.* 7.13.1; the main search doesn't |
+| DS6 | **Retellings joined to events**: add Josephus to the DS1 events | David's census shows a third column from Josephus |
+| DS7 | **More retellings**: Jubilees, 1 Enoch, 1–2 Maccabees, each with events | The Genesis 22 event shows the Jubilees 17–18 account |
+| DS8 | **Gospel harmony**: events seeded from Robertson (1922), all four Gospels | Feeding the 5,000 shows Matthew 14, Mark 6, Luke 9, John 6 |
+| DS9 | **Dead Sea Scrolls as links** on verses and events where a scroll witnesses the text (e.g. the Great Isaiah Scroll) | Isaiah 53 shows a link to the scroll's public viewer, with no stored text |
 
 ## Security
 
@@ -193,6 +279,18 @@ anyway.
   reaches parity, then `recipes.` redirects to Knit. **Principle 1 still applies:**
   recipe-chat's repo tracks the family's recipes (`data/recipes_export.json`), and
   they must be loaded from outside this public repo, never committed here.
+- **D10 — Deep Study** — ✅ decided 2026-10-03 (Kit): build both halves, events and
+  wording ("go big or go home"), as a **separate Deep Study section** that the study
+  assistant and the main search never draw from. See **Deep Study** above.
+- **D11 — who curates events** — ⏳ open (Kit). Every event needs a person to approve
+  it (Deep Study rule 4). Options: (a) Kit approves everything; (b) any member can
+  propose and Kit or an admin approves; (c) Kit plus a named co-curator (the friend
+  who suggested it). Blocks DS1's approval step only; the schema and seed work don't
+  depend on it.
+- **D12 — a Deep Study assistant** — ✅ decided 2026-10-03 (Kit): "Deep study gets its
+  own chat but use the scriptures also." A separate chat at `/deep-study/chat` searches
+  both the standard works and the Deep Study texts and sets the accounts side by side.
+  The study assistant is unchanged and still never sees Deep Study texts.
 
 ## Status updates
 
@@ -638,3 +736,65 @@ anyway.
   VAPID keys are generated once into the VPS `.env` without being printed. VERIFICATION
   row 28. Deployed the same day (`8fc3d26`, migration 009 applied); an actual device
   delivery still needs a member to opt in.
+- **2026-10-03** — **Deep Study planned (Kit; D10).** A friend asked for a way to read
+  the same events and words from other ancient angles: other accounts in the canon,
+  Josephus and the pseudepigrapha, and the Hebrew/Greek/Latin lines. Kit chose both
+  halves (events and wording), as a section separate from the standard works and the
+  assistant. The plan is the **Deep Study** section: rules, a source list with licenses,
+  a draft data model, and slices DS1–DS9. The Dead Sea Scrolls are links only, because
+  every usable transcription and translation is modern and copyrighted. Nothing is built
+  yet. D11 (who curates events) is open.
+- **2026-10-03** — **Deep Study scaffolding + retrieval (Kit: "use Project Gutenberg…
+  start building the scaffolding and RAG").** First vertical slice, DS5-shaped:
+  - **Data:** Josephus's *Antiquities* (#2848) and *Wars* (#2850) pinned in
+    `data/raw/gutenberg/`. `scripts/build-deep-study.mjs` (now part of `build:data`)
+    splits them into Whiston's numbered sections, with ids like `jos-ant.7.13.1` and
+    `jos-war.pref.1`: 1,409 + 664 sections. Charles's *1 Enoch* (#77935) and the KJV
+    Apocrypha (#124) are downloaded but not parsed yet.
+  - **Retrieval:** `migrations/010` adds `ds_passages` (Postgres full-text), loaded by
+    `scripts/load-deep-study.mjs` (now part of `db:migrate`). `lib/deep-study.ts` has
+    `searchDeepStudy` (same all-words/some-words behavior as scripture search, short
+    highlighted fragments because sections are long) and file-backed reading.
+  - **Pages:** `/deep-study` (search + library), `/deep-study/[source]`, and the
+    chapter reader `/deep-study/[source]/[book]/[chapter]#s<n>`. Every page has the
+    "Not scripture" notice (D&C 91). It's public like the scripture reader, since the text
+    is public domain and there's no member data. Nav link: "Deep Study".
+  - **Separation (rule 1), tested:** `tests/deep-study.test.ts`: scripture search never
+    returns `jos-` ids, and the assistant's files don't import `lib/deep-study`.
+  - **Not yet:** a Deep Study *chat* assistant (built later the same day, see below).
+  - Verified locally: `npm test` 152/152, typecheck clean, `/deep-study?q=numbered+the+people+David`
+    lists Antiquities 7.13.1, a bad chapter gives 404. Not yet looked at in a browser
+    (the extension wasn't connected). Not deployed; the VPS needs `npm run db:migrate`
+    for migration 010.
+- **2026-10-03** — **Deep Study chat built (Kit; D12).** `/deep-study/chat` (members only,
+  also covered by `proxy.ts`), linked from `/deep-study`.
+  - **Shared code:** the streaming endpoint moved from `app/api/assistant/route.ts` into
+    `lib/assistant-route.ts` (`streamAssistant`). The study assistant and
+    `/api/deep-study/assistant` both call it with their own instructions and tools, and
+    both count against **one** daily request cap. `AssistantChat` takes a
+    `variant` (`study` | `deep-study`). Each variant has its own endpoint, citation checker,
+    starters, and saved conversation, so the two chats don't share history.
+  - **Tools** (`lib/deep-study-assistant.ts`): the study assistant's `searchScriptures` and
+    `readPassages`, plus `searchDeepStudy` (snippets are the matched fragments) and
+    `readDeepStudy` (capped at 2,500 characters per call, since Josephus's sections are long).
+  - **Citations:** the same `[[…]]` form for both, e.g. `[[Antiquities 7.13.1]]` or
+    `[[Wars 6.4.5-6]]`. `resolveDsReference` accepts those forms, short names
+    ("Ant."), and passage ids. `/api/deep-study/passages` checks scripture first, then
+    Deep Study. Deep Study hits are tagged `deepStudy`, so the chip, popup, and list
+    show "Not scripture" and no "Add to talk". The study assistant's own checker
+    still rejects Deep Study references (tested).
+  - **Instructions:** present the accounts side by side, keep scripture and non-scripture
+    clearly apart, and don't harmonize, rank, or give a verdict. They include
+    `NO_WRITING_RULE` (principle 8).
+  - **Live-tested** through the real chain (Gemini, falling back past 503s). "David numbering
+    Israel": it searched both, read 2 Sam 24, 1 Chr 21, and *Ant.* 7.13.1, and compared the
+    cause, the totals, and Levi/Benjamin. "Fall of Jericho": 10 citations, all real
+    (6 scripture, 4 Josephus). **Bug found and fixed:** the first answer used
+    wiki-style `[[2 Samuel 24:3|"quote"]]`, and real references were struck out. The shared
+    citation parser now takes the part before `|` as the reference and keeps the
+    phrase as text. The Deep Study instructions say not to do it. There's a regression
+    test in `tests/live-regressions.test.ts`.
+  - Also seen (pre-existing, not fixed): an AI SDK warning that Gemini 3 tool calls were
+    replayed without `thoughtSignature` across the fallback chain. The SDK patches it.
+  - `npm test` 160/160, typecheck clean. Signed out, `/deep-study/chat` redirects to sign-in
+    and both Deep Study APIs return 401. Not yet used in a browser. Not deployed.

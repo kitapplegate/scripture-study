@@ -14,6 +14,30 @@ turns it into `data/scriptures/` (gitignored, regenerated on every build).
 
 Downloaded 2026-09-13.
 
+## Deep Study texts (SPEC → Deep Study)
+
+Plain-text downloads from Project Gutenberg, fetched 2026-10-03 from
+`https://www.gutenberg.org/cache/epub/<id>/pg<id>.txt`. `scripts/build-deep-study.mjs`
+cuts off Gutenberg's header, footer, and license (the texts are US public domain; the
+"Project Gutenberg" name is a trademark, so it isn't on the processed text), strips
+the translator's footnotes, and writes `data/deep-study/` (gitignored).
+
+| File | Text | Status |
+|---|---|---|
+| `raw/gutenberg/pg2848.txt` | Josephus, *Antiquities of the Jews*, tr. Whiston (1737), #2848 | Built: 1,409 sections |
+| `raw/gutenberg/pg2850.txt` | Josephus, *The Wars of the Jews*, tr. Whiston (1737), #2850 | Built: 664 sections |
+| `raw/gutenberg/pg77935.txt` | *The Book of Enoch*, tr. R.H. Charles (SPCK, 1917), #77935 | Downloaded, not yet built |
+| `raw/gutenberg/pg124.txt` | *Deuterocanonical Books* (the KJV Apocrypha: 1–2 Esdras, Tobit, Judith, … 1–2 Maccabees), #124 | Downloaded, not yet built |
+
+Whiston's footnotes are dropped, not shown. Each book's footnote numbers come from its
+FOOTNOTES block, and only those markers are removed, in order. 62 of the
+~830 markers aren't in Gutenberg's text at all (checked: no stray numbers are left), and the build lists them as warnings.
+
+**Not on Gutenberg** (checked through the Gutendex catalog 2026-10-03): *Jubilees*,
+Young's Literal Translation, Brenton's Septuagint. They're public domain but have to
+come from elsewhere (CCEL, eBible.org). Douay-Rheims is there (#8300, Challoner), for
+the wording half later.
+
 ## Why this source instead of Project Gutenberg
 
 Gutenberg only has the KJV (#10) and the Book of Mormon (#17), both as plain text.

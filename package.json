@@ -3,13 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build:data": "node scripts/build-scriptures.mjs",
+    "build:data": "node scripts/build-scriptures.mjs && node scripts/build-deep-study.mjs",
     "dev": "next dev",
     "prebuild": "npm run build:data",
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "db:migrate": "npm run build:data && auth migrate --config lib/auth.ts --yes && node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/migrate.mjs && node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/load-verses.mjs",
+    "db:migrate": "npm run build:data && auth migrate --config lib/auth.ts --yes && node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/migrate.mjs && node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/load-verses.mjs && node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/load-deep-study.mjs",
     "invite": "node --env-file-if-exists=.env --env-file-if-exists=.env.local scripts/create-invite.mjs",
     "test": "node --env-file-if-exists=.env --env-file-if-exists=.env.local --import tsx --test tests/*.test.ts"
   },

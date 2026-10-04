@@ -13,6 +13,9 @@ export type CitationResult =
       reference: string;
       href: string;
       verses: { verse: number; text: string }[];
+      // A Deep Study passage (not scripture): verses are its sections, and there's no
+      // "Add to talk". Only the Deep Study chat's checker sets this.
+      deepStudy?: true;
     }
   | { ref: string; found: false };
 

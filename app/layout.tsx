@@ -29,6 +29,7 @@ function navLinks(user: { role?: string | null } | undefined) {
           { href: "/talks", label: "My talks" },
         ]
       : []),
+    { href: "/deep-study", label: "Deep Study" },
     ...(user?.role === "admin" ? [{ href: "/admin", label: "Invites" }] : []),
   ];
 }

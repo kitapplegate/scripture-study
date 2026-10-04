@@ -8,14 +8,15 @@ export type CitationMap = Map<string, PassageResult>;
 // Asks the server to find and check every scripture reference in `text` — [[bracketed]]
 // or plain. Until it answers, bracketed citations render as plain chips; afterwards
 // real references link to the verse and made-up ones are struck out.
-export function useCitations(text: string, enabled: boolean) {
+// `endpoint` is /api/passages, or /api/deep-study/passages for the Deep Study chat.
+export function useCitations(text: string, enabled: boolean, endpoint = "/api/passages") {
   const [map, setMap] = useState<CitationMap>();
 
   useEffect(() => {
     if (!enabled || !text.trim()) return;
     let cancelled = false;
     const timer = setTimeout(() => {
-      fetch("/api/passages", {
+      fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text }),
@@ -30,7 +31,7 @@ export function useCitations(text: string, enabled: boolean) {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [text, enabled]);
+  }, [text, enabled, endpoint]);
 
   return map;
 }

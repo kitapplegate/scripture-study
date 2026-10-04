@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { AddToTalkButton } from "@/components/talk-builder/AddToTalkButton";
 import type { CitationMap } from "./useCitations";
-import { VersePopup, type FoundPassage } from "./VersePopup";
+import { NotScriptureTag, VersePopup, type FoundPassage } from "./VersePopup";
 
 // The verified scriptures from an assistant answer, each with "Add to talk". Only
 // members can use the assistant, so the button always shows here.
@@ -18,14 +18,17 @@ export function CitationPanel({ citations }: { citations?: CitationMap }) {
     <>
     <details open={found.length <= 4} className="mt-3 rounded-lg border border-line bg-bg p-3 text-sm">
       <summary className="cursor-pointer text-xs uppercase tracking-wide text-muted">
-        Scriptures cited ({found.length})
+        {found.some((c) => c.deepStudy) ? "Passages cited" : "Scriptures cited"} ({found.length})
       </summary>
       <ul className="mt-2 space-y-3">
         {found.map((c) => (
           <li key={c.ref}>
             <div className="flex items-start justify-between gap-3">
-              <button type="button" onClick={() => setOpen({ ...c })} className="pt-1 text-left font-medium text-accent hover:underline">{c.reference}</button>
-              <AddToTalkButton verseId={c.id} endVerseId={c.endId ?? null} reference={c.reference} align="right" />
+              <button type="button" onClick={() => setOpen({ ...c })} className="pt-1 text-left font-medium text-accent hover:underline">
+                {c.reference}
+                {c.deepStudy && <NotScriptureTag />}
+              </button>
+              {!c.deepStudy && <AddToTalkButton verseId={c.id} endVerseId={c.endId ?? null} reference={c.reference} align="right" />}
             </div>
             <p className="mt-1 font-serif leading-relaxed">
               {c.verses.map((v) => (
@@ -40,7 +43,7 @@ export function CitationPanel({ citations }: { citations?: CitationMap }) {
       </ul>
       {missing > 0 && (
         <p className="mt-3 text-xs text-muted">
-          {missing === 1 ? "1 reference" : `${missing} references`} in this answer didn't match a real verse and
+          {missing === 1 ? "1 reference" : `${missing} references`} in this answer didn't match a real passage and
           {missing === 1 ? " is" : " are"} shown struck out. Don't rely on {missing === 1 ? "it" : "them"}.
         </p>
       )}

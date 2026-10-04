@@ -38,6 +38,7 @@ export function VersePopup({ passage }: { passage: FoundPassage | null }) {
           <div className="mb-2 flex items-start justify-between gap-3">
             <h2 id={titleId} className="pt-2 font-serif text-xl font-semibold">
               {passage.reference}
+              {passage.deepStudy && <NotScriptureTag />}
             </h2>
             <button
               type="button"
@@ -57,7 +58,9 @@ export function VersePopup({ passage }: { passage: FoundPassage | null }) {
             ))}
           </p>
           <div className="mt-4 flex flex-wrap items-center gap-2">
-            <AddToTalkButton verseId={passage.id} endVerseId={passage.endId ?? null} reference={passage.reference} />
+            {!passage.deepStudy && (
+              <AddToTalkButton verseId={passage.id} endVerseId={passage.endId ?? null} reference={passage.reference} />
+            )}
             <Link
               href={passage.href}
               className="inline-flex min-h-11 items-center rounded-md border border-control px-3 text-sm hover:border-accent hover:text-accent"
@@ -68,5 +71,14 @@ export function VersePopup({ passage }: { passage: FoundPassage | null }) {
         </div>
       )}
     </dialog>
+  );
+}
+
+// Marks a Deep Study passage (SPEC Deep Study rule 1) wherever a citation is shown.
+export function NotScriptureTag() {
+  return (
+    <span className="ml-2 inline-block rounded-full border border-line px-2 py-0.5 align-middle font-sans text-xs font-normal text-muted">
+      Not scripture
+    </span>
   );
 }
