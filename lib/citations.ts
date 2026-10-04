@@ -2,7 +2,10 @@
 // references a model wrote without brackets (found server-side by lib/citations-server).
 // These helpers are pure so they're easy to test.
 
-export const CITATION_RE = /\[\[([^[\]\n]{2,80})\]\]/g;
+// Group 1 is the reference. Models sometimes write wiki-style [[Alma 32:21|a quoted
+// phrase]]; group 2 is that phrase, which is kept as text beside the citation.
+const CITATION_SRC = String.raw`\[\[([^[\]\n|]{2,80})(?:\|([^[\]\n]{1,300}))?\]\]`;
+export const CITATION_RE = new RegExp(CITATION_SRC, "g");
 
 const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -19,9 +22,14 @@ export function extractCitations(text: string) {
 // reference inside [[brackets]] is never processed twice.
 export function replaceCitations(text: string, plainRefs: string[], replace: (ref: string, explicit: boolean) => string) {
   const plain = [...new Set(plainRefs)].filter(Boolean).sort((a, b) => b.length - a.length).map(escapeRegExp);
-  const source = `\\[\\[([^[\\]\\n]{2,80})\\]\\]${plain.length ? `|(${plain.join("|")})(?!\\d)` : ""}`;
-  return text.replace(new RegExp(source, "g"), (_, explicit: string | undefined, bare: string | undefined) =>
-    explicit !== undefined ? replace(explicit.trim(), true) : replace(bare!, false),
+  const source = `${CITATION_SRC}${plain.length ? `|(${plain.join("|")})(?!\\d)` : ""}`;
+  return text.replace(
+    new RegExp(source, "g"),
+    (_, explicit: string | undefined, label: string | undefined, bare: string | undefined) => {
+      if (explicit === undefined) return replace(bare!, false);
+      const cited = replace(explicit.trim(), true);
+      return label?.trim() ? `${label.trim()} (${cited})` : cited;
+    },
   );
 }
 

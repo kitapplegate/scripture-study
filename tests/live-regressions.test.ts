@@ -4,6 +4,7 @@ import fs from "node:fs";
 import { describe, test } from "node:test";
 import { asSchema } from "ai";
 import { assistantTools } from "../lib/assistant-tools";
+import { citationsToLinks } from "../lib/citations";
 import { checkCitations } from "../lib/citations-server";
 import { buildBookLookup, buildReferencePattern, findReferences, parseReference } from "../lib/references";
 
@@ -55,5 +56,23 @@ describe("tool schemas accept what models actually send", () => {
     assert.equal(result?.success, true);
     const json = JSON.stringify(schema.jsonSchema);
     assert.match(json, /"null"/, "the JSON schema sent to providers must allow null");
+  });
+});
+
+// 2026-10-03, Deep Study chat: Gemini wrote wiki-style [[2 Samuel 24:3|("why doth my lord…")]],
+// and real references were struck out as fake.
+describe("wiki-style piped citations", () => {
+  const answer = 'Joab objected [[2 Samuel 24:3|("why doth my lord the king delight in this thing?")]] but [[1 Chronicles 21:5|1,100,000 men]].';
+
+  test("the reference before the pipe is what gets checked", async () => {
+    const results = await checkCitations(answer);
+    assert.deepEqual(results.map((r) => [r.ref, r.found]), [["2 Samuel 24:3", true], ["1 Chronicles 21:5", true]]);
+  });
+
+  test("the quoted phrase stays as text beside the citation chip", () => {
+    assert.equal(
+      citationsToLinks("x [[Alma 32:21|a quoted phrase]] y"),
+      "x a quoted phrase ([Alma 32:21](cite:Alma%2032%3A21)) y",
+    );
   });
 });
