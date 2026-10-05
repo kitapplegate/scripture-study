@@ -155,7 +155,7 @@ big or go home"):
 | Hebrew OT words, glosses, Strong's | STEPBible TAHOT (Tyndale House), on the Westminster Leningrad Codex | CC-BY 4.0 |
 | Greek NT words, glosses, Strong's | STEPBible TAGNT | CC-BY 4.0 |
 | Versification map (MT/LXX/Vulgate/KJV) | STEPBible TVTMS | CC-BY 4.0 |
-| Greek OT text | Swete's LXX (1887–94) ⚠. Avoid Rahlfs (1935) and CATSS, which are copyrighted or restricted | PD |
+| Greek OT text | Brenton's Greek Septuagint (1844), per D13. Not Swete (only CC BY-SA digitizations exist); avoid Rahlfs (1935) and CATSS, which are copyrighted or restricted | PD |
 | Septuagint in English | Brenton (1844) | PD |
 | Latin Vulgate | Clementine Vulgate | PD |
 | Vulgate in English | Douay-Rheims (Challoner) | PD |
@@ -291,6 +291,9 @@ anyway.
   own chat but use the scriptures also." A separate chat at `/deep-study/chat` searches
   both the standard works and the Deep Study texts and sets the accounts side by side.
   The study assistant is unchanged and still never sees Deep Study texts.
+- **D13 — Greek Old Testament text** — ✅ decided 2026-10-05 (Kit): "use brentons greek".
+  Swete's LXX is only available as CC BY-SA 4.0 digitizations, so the Greek OT comes from
+  Brenton's Greek Septuagint (eBible `grcbrent`, public domain) instead.
 
 ## Status updates
 
@@ -798,3 +801,11 @@ anyway.
     replayed without `thoughtSignature` across the fallback chain. The SDK patches it.
   - `npm test` 160/160, typecheck clean. Signed out, `/deep-study/chat` redirects to sign-in
     and both Deep Study APIs return 401. Not yet used in a browser. Not deployed.
+- **2026-10-05** — **All remaining sources pinned, nothing built (Kit: "get all the
+  documents before deploying").** Brenton (English + Greek), YLT, Douay-Rheims 1899,
+  Clementine Vulgate, Robinson-Pierpont (eBible USFM); STEPBible TAHOT/TAGNT/TVTMS;
+  Charles's *Jubilees* (Sefaria); Robertson's *Harmony* (Gutenberg #36264); Easton,
+  Nave (CCEL), TSK (CrossWire); Official Declaration 1 (1890 text, Wikisource). Not
+  pinned: Swete (CC BY-SA, see D13), eBible `grclxx` (base edition unstated), SBLGNT (©).
+  Details and checksums in `data/SOURCES.md`. `npm run build:data` and `npm test`
+  160/160 unaffected.
